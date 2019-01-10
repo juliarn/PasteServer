@@ -1,0 +1,16 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "PasteServer to upload text or code",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "Panamo",
+  "license": "MIT",
+  "dependencies": {
+    "config": "^3.0.1",
+    "express": "^4.16.4",
+    "serve-static": "latest"
+  }
+}
