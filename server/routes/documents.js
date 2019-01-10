@@ -15,7 +15,7 @@ router.post("/", (request, response) => {
         const key = documentStorage.save(text);
         response.status(201).send(JSON.stringify({key}));
     } else
-        response.status(406).send(JSON.stringify({message: `Text to long (max. ${maxLength})`}));
+        response.status(406).send(JSON.stringify({message: `Text too long (max. ${maxLength})`}));
 });
 
 router.get("/:key", (request, response) => {
