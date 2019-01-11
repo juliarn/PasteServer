@@ -4,12 +4,13 @@
   "description": "PasteServer to upload text or code",
   "main": "index.js",
   "scripts": {
-    "start": "nodejs index.js"
+    "start": "node index.js"
   },
   "author": "Panamo",
   "license": "MIT",
   "dependencies": {
     "express": "^4.16.4",
-    "serve-static": "latest"
+    "serve-static": "latest",
+    "body-parser": "latest"
   }
 }

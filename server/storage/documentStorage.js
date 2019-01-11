@@ -12,22 +12,22 @@ class DocumentStorage {
 
     save(text) {
         const key = keyCreator.create();
-        fs.writeFile(this.storagePath + "/" + key, text, error => {
-           if(error)
-               console.log("Error while writing file: " + error.stack);
-
-           console.log("Document saved: " + key);
-           return key;
-        });
+        try {
+            fs.writeFileSync(this.storagePath + "/" + key, text);
+        } catch (e) {
+            return null;
+        }
+        return key;
     }
 
     load(key) {
         const path = this.storagePath + "/" + key;
+        console.log(path);
 
         if(!fs.existsSync(path))
             return null;
 
-        return fs.readFileSync(path).data;
+        return fs.readFileSync(path, "utf8");
     }
 
 }

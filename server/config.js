@@ -4,10 +4,10 @@ module.exports = {
   },
   document: {
     maxLength: 40000,
-    storagePath: "C:\\Users\\julia\\WebstormProjects\\PasteServer\\documents"
+    storagePath: "C:/Users/julia/WebstormProjects/PasteServer/documents"
   },
   keyGenerator: {
-    keyLength: 8,
+    keyLength: 10,
     keyChars: "abcdefghijklmnopqrstivwxyz0123456789",
     withToUpperCase: true
   }
