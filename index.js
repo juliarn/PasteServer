@@ -7,7 +7,8 @@ const config = require("./config");
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
-app.use(serveStatic("../web"));
 app.use("/documents", require("./routes/documents"));
+app.use(serveStatic(__dirname + "/static", {maxAge: config.fileMaxAge}));
+app.use("/:key", serveStatic(__dirname + "/static", {maxAge: config.fileMaxAge}));
 
 app.listen(config.server.port, console.log(`The server was started successfully on port ${config.server.port}`));

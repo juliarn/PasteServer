@@ -22,6 +22,12 @@ router.post("/", (request, response) => {
         response.status(406).send(JSON.stringify({message: `Text too long (max. ${maxLength})`}));
 });
 
+router.get("/", (request, response) => {
+    response.send("Usage of the REST-API - Post to this route: Send a json which contains the key 'text' and the wanted text as value. " +
+        "Response: json which contains the key 'key' for the key or 'message' when something went wrong. Get to this route: " +
+        "Create a get request to this route + /[key]. Response: json which contains the key 'text' for the text or 'message' when something went wrong.");
+});
+
 router.get("/:key", (request, response) => {
     const key = request.params.key;
     console.log("Received post to get document: " + key);

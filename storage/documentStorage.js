@@ -1,4 +1,5 @@
 const fs = require("fs");
+const path = require("path");
 const config = require("../config");
 const keyCreator = require("./keyCreator");
 
@@ -22,7 +23,6 @@ class DocumentStorage {
 
     load(key) {
         const path = this.storagePath + "/" + key;
-        console.log(path);
 
         if(!fs.existsSync(path))
             return null;
@@ -32,4 +32,4 @@ class DocumentStorage {
 
 }
 
-module.exports = new DocumentStorage(config.document.storagePath);
+module.exports = new DocumentStorage(path.resolve(config.document.storagePath));

@@ -4,9 +4,12 @@ document.addEventListener("DOMContentLoaded", () => {
    const currentDocument = new PasteDocument();
 
    const url = window.location.href.split("/");
-   if(url.length > 1) {
-      const key = url[1];
-      currentDocument.load(key, textArea);
+   if(url.length > 3) {
+      const key = url[3];
+      if(key.trim() !== "") {
+          currentDocument.load(key, textArea);
+          currentDocument.locked = true;
+      }
    }
 
    saveButton.addEventListener("click", () => currentDocument.save(textArea.value));
@@ -26,24 +29,24 @@ class PasteDocument {
            this.locked = true;
            const request = new XMLHttpRequest();
            request.onreadystatechange = function() {
-
                let response;
                try {
                    response = JSON.parse(this.responseText);
                } catch (e) {
+                   console.log(e.message);
                    return;
                }
 
                if(this.status === 201) {
                    const key = response.key;
-                   //window.location.href = window.location.href + key;
+                   window.location.href = window.location.href + key;
                } else if(this.status === 406) {
                    const message = response.message;
-                   console.log(message);
+                   console.log("Error while saving: " + message);
                }
            };
            request.open("POST", "/documents", true);
-           request.setRequestHeader("Content-Type", "application/json")
+           request.setRequestHeader("Content-Type", "application/json");
            request.send(JSON.stringify({text: text}));
        }
    }
@@ -55,19 +58,20 @@ class PasteDocument {
            try {
                response = JSON.parse(this.responseText);
            } catch (e) {
+               console.log(e.message);
                return;
            }
 
            if(this.status === 200) {
                textArea.value = response.text;
-               PasteDocument.this.locked = true;
                textArea.readOnly = true;
-           } else if(this.status === 404) {
-               const message = response.message;
-               console.log(message);
-           }
+           } else if(this.status === 404)
+               window.location.href = window.location.href.split(key)[0];
+
        };
-       request.open("GET", "/documents", true);
+
+       request.open("GET", "/documents/" + key, true);
+       request.send();
    }
 
 }
