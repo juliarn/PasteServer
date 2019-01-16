@@ -7,12 +7,25 @@ body {
     display: none;
 }
 
-textarea {
-    background: 0 0;
-    color: white;
+.invisible {
+    display: none; !important;
+}
+
+#codeBox {
     font-size: 1rem;
-    width: 100%;
+    font-family: monospace;
+    background: 0 0; !important;
+    margin: 0;
+    padding: 0;
+}
+
+textarea {
+    font-size: 1rem;
+    font-family: monospace;
+    color: white;
+    background: 0 0;
     height: 100vh;
+    width: 100%;
     border: 0;
     outline: none;
     resize: none;
@@ -26,6 +39,7 @@ textarea {
     bottom: 0;
     right: 0;
     position: fixed;
+    text-align: center;
     -moz-user-select: none;
     -webkit-user-select: none;
 }
@@ -33,6 +47,7 @@ textarea {
 .buttons > i {
     padding: 3%;
     font-size: 2rem;
+    display: inline-block;
 }
 
 .buttons > i:hover {

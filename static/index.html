@@ -3,17 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <title>PasteServer</title>
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/androidstudio.min.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 <body>
 
 <div class="buttons">
-    <i id="saveButton" class="material-icons">save</i>
+    <i id="saveButton" title="Save current document" class="material-icons">save</i>
+    <i id="newDocButton" title="Create a new document" class="material-icons">note_add</i>
+    <i id="copyButton" title="Copy to clipboard" class="material-icons">file_copy</i>
 </div>
 
+<pre id="codeBox" class="hljs"><code></code></pre>
 <textarea class="textArea" spellcheck="false"></textarea>
 
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/highlight.min.js"></script>
 <script type="text/javascript" src="index.js"></script>
 </body>
 </html>

@@ -1,24 +1,61 @@
 document.addEventListener("DOMContentLoaded", () => {
-   const textArea = document.querySelector("textarea");
-   const saveButton = document.getElementById("saveButton");
-   const currentDocument = new PasteDocument();
+    const codeBox = document.getElementById("codeBox");
+    const code = codeBox.querySelector("code");
+    const textArea = document.querySelector("textarea");
 
-   const url = window.location.href.split("/");
-   if(url.length > 3) {
-      const key = url[3];
-      if(key.trim() !== "") {
-          currentDocument.load(key, textArea);
-          currentDocument.locked = true;
-      }
-   }
+    showElement(codeBox, false);
 
-   saveButton.addEventListener("click", () => currentDocument.save(textArea.value));
+    const currentDocument = new PasteDocument(code, codeBox, textArea);
+
+    const saveButton = document.getElementById("saveButton");
+    const copyButton = document.getElementById("copyButton");
+    const newDocButton = document.getElementById("newDocButton");
+
+    saveButton.addEventListener("click", () => currentDocument.save(textArea.value));
+    copyButton.addEventListener("click", () => {
+        if (currentDocument.locked) {
+            if (document.selection) {
+                const range = document.body.createTextRange();
+                range.moveToElementText(code);
+                range.select();
+            } else if (window.getSelection) {
+                const range = document.createRange();
+                range.selectNode(code);
+                window.getSelection().removeAllRanges();
+                window.getSelection().addRange(range);
+            }
+        } else
+            textArea.select();
+        document.execCommand("copy");
+    });
+    newDocButton.addEventListener("click", () => {
+        const url = window.location.href.split("/");
+        if(url.length > 2)
+            window.location.href = "http://" + url[2];
+    });
+
+    const url = window.location.href.split("/");
+    if(url.length > 3) {
+        const key = url[3];
+        if(key.trim() !== "")
+            currentDocument.load(key);
+    }
 });
+
+function showElement(element, show) {
+    if(show)
+        element.classList.remove("invisible");
+    else
+        element.classList.add("invisible");
+}
 
 class PasteDocument {
 
-   constructor() {
+   constructor(code, codeBox, textArea) {
        this.locked = false;
+       this.code = code;
+       this.codeBox = codeBox;
+       this.textArea = textArea;
    }
 
    save(text) {
@@ -26,7 +63,6 @@ class PasteDocument {
            return;
 
        if(!this.locked) {
-           this.locked = true;
            const request = new XMLHttpRequest();
            request.onreadystatechange = function() {
                let response;
@@ -51,20 +87,26 @@ class PasteDocument {
        }
    }
 
-   load(key, textArea) {
+   load(key) {
        const request = new XMLHttpRequest();
+       const self = this;
        request.onreadystatechange = function() {
            let response;
            try {
                response = JSON.parse(this.responseText);
            } catch (e) {
                console.log(e.message);
+               console.log("Response text: " + this.responseText);
                return;
            }
 
            if(this.status === 200) {
-               textArea.value = response.text;
-               textArea.readOnly = true;
+               showElement(self.codeBox, true);
+               showElement(self.textArea, false);
+
+               self.code.innerHTML = hljs.highlightAuto(response.text).value;
+               self.textArea.readOnly = true;
+               self.locked = true;
            } else if(this.status === 404)
                window.location.href = window.location.href.split(key)[0];
 

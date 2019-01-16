@@ -2,8 +2,12 @@ module.exports = {
     server: {
         port: 5000
     },
+    createRateLimit: {
+        timeInMs: 60 * 1000,
+        maxRequestsPerTime: 30
+    },
     document: {
-        maxLength: 40000,
+        maxLength: 50000,
         storagePath: "./documents"
     },
     keyGenerator: {
@@ -11,5 +15,4 @@ module.exports = {
         keyChars: "abcdefghijklmnopqrstivwxyz0123456789",
         withToUpperCase: true
     },
-    fileMaxAge: 60000
 };

@@ -4,7 +4,14 @@ const router = express.Router();
 const config = require("../config");
 const documentStorage = require("../storage/documentStorage");
 
-router.post("/", (request, response) => {
+// Putting a rateLimit on the creating of documents to avoid crashes
+const rateLimit = require("express-rate-limit");
+const rateLimitHandler = rateLimit({
+    windowMs: config.createRateLimit.timeInMs,
+    max: config.createRateLimit.maxRequestsPerTime
+});
+
+router.post("/", rateLimitHandler, (request, response) => {
     const text = request.body.text;
     console.log("Received post to create new document");
 
