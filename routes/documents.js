@@ -11,7 +11,7 @@ const rateLimitHandler = rateLimit({
     max: config.createRateLimit.maxRequestsPerTime
 });
 
-router.post("/", rateLimitHandler, (request, response) => {
+router.post("/", rateLimitHandler, async (request, response) => {
     const text = request.body.text;
     console.log("Received post to create new document");
 
@@ -19,7 +19,7 @@ router.post("/", rateLimitHandler, (request, response) => {
 
     const maxLength = config.document.maxLength;
     if(text.length < maxLength) {
-        const key = documentStorage.save(text);
+        const key = await documentStorage.save(text);
         if(key != null) {
             console.log("Created document: " + key);
             response.status(201).send(JSON.stringify({key: key}));
@@ -35,13 +35,13 @@ router.get("/", (request, response) => {
         "Create a get request to this route + /[key]. Response: json which contains the key 'text' for the text or 'message' when something went wrong.");
 });
 
-router.get("/:key", (request, response) => {
+router.get("/:key", async (request, response) => {
     const key = request.params.key;
     console.log("Received post to get document: " + key);
 
     response.setHeader("Content-Type", "application/json");
 
-    const text = documentStorage.load(key);
+    const text = await documentStorage.load(key);
 
     if(text == null)
         response.status(404).send(JSON.stringify({message: "No document found"}));

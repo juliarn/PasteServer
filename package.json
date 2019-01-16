@@ -9,6 +9,7 @@
   "author": "Panamo",
   "license": "MIT",
   "dependencies": {
+    "arangojs": "^6.10.0",
     "body-parser": "latest",
     "express": "^4.16.4",
     "express-rate-limit": "^3.3.2",
