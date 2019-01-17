@@ -6,15 +6,21 @@ const redis = require("redis");
 class ArangoStorage {
 
     constructor(storageConfig) {
-        const database = Database(`http://${storageConfig.host}:${storageConfig.port}`);
+        const database = new Database(`http://${storageConfig.host}:${storageConfig.port}`);
         database.useBasicAuth(storageConfig.user, storageConfig.password);
 
-        database.createDatabase(storageConfig.database).then(() => database.useDatabase(storageConfig.database))
-            .catch(error => console.error("Failed to create database", error));
+        database.listDatabases().then(databases => {
+            if(databases.indexOf(storageConfig.database) === -1) {
+                database.createDatabase(storageConfig.database).then()
+                    .catch(error => console.error("Failed to create database", error));
+            }
+        });
+
+        database.useDatabase(storageConfig.database)
 
         const collection = database.collection("pasteDocuments");
         collection.exists().then(exists => {
-            if(exists)
+            if(!exists)
                 collection.create().catch(error => console.error("Failed to create collection", error));
         });
 

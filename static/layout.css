@@ -34,8 +34,8 @@ textarea {
 .buttons {
     background-color: #515658;
     border-top: 6px gray solid;
-    width: 15%;
-    height: 5vh;
+    min-width: 15%;
+    min-height: 5vh;
     bottom: 0;
     right: 0;
     position: fixed;
