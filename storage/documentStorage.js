@@ -1,19 +1,11 @@
 const config = require("../config");
 const keyCreator = require("./keyCreator");
 const {Database} = require("arangojs");
+const redis = require("redis");
 
-class DocumentStorage {
+class ArangoStorage {
 
-    async save(text) {}
-
-    async load(key) {}
-
-}
-
-class ArangoStorage extends DocumentStorage {
-
-    async constructor(storageConfig) {
-        super();
+    constructor(storageConfig) {
         const database = Database(`http://${storageConfig.host}:${storageConfig.port}`);
         database.useBasicAuth(storageConfig.user, storageConfig.password);
 
@@ -21,8 +13,10 @@ class ArangoStorage extends DocumentStorage {
             .catch(error => console.error("Failed to create database", error));
 
         const collection = database.collection("pasteDocuments");
-        if(!await collection.exists())
-            collection.create().catch(error => console.error("Failed to create collection", error));
+        collection.exists().then(exists => {
+            if(exists)
+                collection.create().catch(error => console.error("Failed to create collection", error));
+        });
 
         this.collection = collection;
     }
@@ -30,12 +24,11 @@ class ArangoStorage extends DocumentStorage {
 
     async save(text) {
         const key = keyCreator.create();
-        const document = {
-            _key: key,
-            text: text
-        };
         try {
-            await this.collection.save(document);
+            await this.collection.save({
+                _key: key,
+                text: text
+            });
         } catch (error) {
             console.error("Failed to save document", error);
         }
@@ -50,21 +43,48 @@ class ArangoStorage extends DocumentStorage {
             return document.text;
         } catch (error) {
             console.error("Failed to load document", error);
-            return null;
         }
+        return null;
     }
 
 }
 
-class RedisStorage extends DocumentStorage {
+class RedisStorage {
 
     constructor(storageConfig) {
-        super();
+        this.client = redis.createClient({
+            host: storageConfig.host,
+            port: storageConfig.port,
+            password: storageConfig.password
+        });
+        this.client.on("error", error => console.log("Redis error occured", error));
     }
 
-    async save(text) {}
+    save(text) {
+        const self = this;
+        const key = keyCreator.create();
+        return new Promise((resolve, reject) => {
+            self.client.hmset(key, {text: text}, error => {
+                if(error)
+                    reject(error);
+                resolve(key);
+            });
+        });
+    }
 
-    async load(key) {}
+    load(key) {
+        const self = this;
+        return new Promise((resolve, reject) => {
+            self.client.hgetall(key, (error, object) => {
+                if(error)
+                    reject(error);
+                if(!object || !object.text)
+                    resolve(null);
+                else
+                    resolve(object.text);
+            });
+        });
+    }
 
 }
 

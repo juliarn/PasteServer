@@ -44,12 +44,17 @@ textarea {
     -webkit-user-select: none;
 }
 
-.buttons > i {
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+i.material-icons {
     padding: 3%;
     font-size: 2rem;
     display: inline-block;
 }
 
-.buttons > i:hover {
+i.material-icons:hover {
     color: #2d2f30;
 }

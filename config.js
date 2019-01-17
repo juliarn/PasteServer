@@ -3,10 +3,10 @@ module.exports = {
         port: 5000
     },
     storage: {
-        type: "arangodb",
+        type: "redis",
         host: "127.0.0.1",
-        port: 8529,
-        password: "test",
+        port: 6379,
+        password: "",
         // only arangodb
         user: "root",
         database: "pasteServer"
