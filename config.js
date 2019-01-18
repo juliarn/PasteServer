@@ -5,11 +5,13 @@ module.exports = {
     storage: {
         type: "redis",
         host: "127.0.0.1",
-        port: 8529,
+        port: 6379,
         password: "test",
         // only arangodb
         user: "root",
-        database: "pasteServer"
+        database: "pasteServer",
+        // only redis
+        documentExpireInMs: 3 * 24 * 60 * 60 * 1000
     },
     createRateLimit: {
         timeInMs: 60 * 1000,

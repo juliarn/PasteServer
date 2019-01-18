@@ -1,10 +1,11 @@
 const express = require("express");
 const router = express.Router();
 
+const crypto = require("crypto");
 const config = require("../config");
-const documentStorage = require("../storage/documentStorage");
+const documentStorage = config.storage.type === "arangodb" ? require("../storage/arangoStorage") : require("../storage/redisStorage");
 
-// Putting a rateLimit on the creating of documents to avoid crashes
+// Putting a rateLimit on the creating and deleting of documents to avoid crashes
 const rateLimit = require("express-rate-limit");
 const rateLimitHandler = rateLimit({
     windowMs: config.createRateLimit.timeInMs,
@@ -13,13 +14,13 @@ const rateLimitHandler = rateLimit({
 
 router.post("/", rateLimitHandler, async (request, response) => {
     const text = request.body.text;
-    console.log("Received post to create new document");
 
     response.setHeader("Content-Type", "application/json");
 
     const maxLength = config.document.maxLength;
     if(text.length < maxLength) {
-        const key = await documentStorage.save(text);
+        const creatorHash = crypto.createHash("sha256").update(request.connection.remoteAddress).digest("hex");
+        const key = await documentStorage.save(text, creatorHash);
         if(key != null) {
             console.log("Created document: " + key);
             response.status(201).send(JSON.stringify({key: key}));
@@ -29,15 +30,8 @@ router.post("/", rateLimitHandler, async (request, response) => {
         response.status(406).send(JSON.stringify({message: `Text too long (max. ${maxLength})`}));
 });
 
-router.get("/", (request, response) => {
-    response.send("Usage of the REST-API - Post to this route: Send a json which contains the key 'text' and the wanted text as value. " +
-        "Response: json which contains the key 'key' for the key or 'message' when something went wrong. Get to this route: " +
-        "Create a get request to this route + /[key]. Response: json which contains the key 'text' for the text or 'message' when something went wrong.");
-});
-
 router.get("/:key", async (request, response) => {
     const key = request.params.key;
-    console.log("Received post to get document: " + key);
 
     response.setHeader("Content-Type", "application/json");
 
@@ -45,8 +39,31 @@ router.get("/:key", async (request, response) => {
 
     if(text == null)
         response.status(404).send(JSON.stringify({message: "No document found"}));
-    else
+    else {
+        console.log("Sending document: " + key);
         response.send(JSON.stringify({text: text}));
+    }
+});
+
+router.get("/delete/:key", rateLimitHandler, async (request, response) => {
+    const key = request.params.key;
+
+    response.setHeader("Content-Type", "application/json");
+    console.log(request.connection.remoteAddress);
+
+    const creatorHash = crypto.createHash("sha256").update(request.connection.remoteAddress).digest("hex");
+    if(await documentStorage.delete(key, creatorHash)) {
+        console.log("Deleted document: " + key);
+        response.send(JSON.stringify({message: "Success"}));
+    } else
+        response.status(403).send(JSON.stringify({message: "You are not the owner of this document or the document does not exist"}));
+
+});
+
+router.get("/", (request, response) => {
+    response.send("Usage of the REST-API - Post to this route: Send a json which contains the key 'text' and the wanted text as value. " +
+        "Response: json which contains the key 'key' for the key or 'message' when something went wrong. Get to this route: " +
+        "Create a get request to this route + /[key]. Response: json which contains the key 'text' for the text or 'message' when something went wrong.");
 });
 
 module.exports = router;

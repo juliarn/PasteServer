@@ -1,6 +1,6 @@
 body {
     background-color: #2b2b2b;
-    padding: 30px 60px;
+    padding: 2% 4%;
 }
 
 ::-webkit-scrollbar {
@@ -34,27 +34,25 @@ textarea {
 .buttons {
     background-color: #515658;
     border-top: 6px gray solid;
-    min-width: 15%;
-    min-height: 5vh;
     bottom: 0;
     right: 0;
+    display: inline-grid;
     position: fixed;
-    text-align: center;
     -moz-user-select: none;
     -webkit-user-select: none;
 }
 
-a {
-    text-decoration: none;
-    color: inherit;
-}
-
 i.material-icons {
-    padding: 3%;
+    padding: 15%;
     font-size: 2rem;
     display: inline-block;
 }
 
 i.material-icons:hover {
     color: #2d2f30;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
 }

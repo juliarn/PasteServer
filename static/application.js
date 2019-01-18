@@ -10,6 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const saveButton = document.getElementById("saveButton");
     const copyButton = document.getElementById("copyButton");
     const newDocButton = document.getElementById("newDocButton");
+    const deleteButton = document.getElementById("deleteButton");
 
     saveButton.addEventListener("click", () => currentDocument.save(textArea.value));
     copyButton.addEventListener("click", () => {
@@ -33,6 +34,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if(url.length > 2)
             window.location.href = "http://" + url[2];
     });
+    deleteButton.addEventListener("click", () => currentDocument.delete());
 
     const url = window.location.href.split("/");
     if(url.length > 3) {
@@ -56,6 +58,7 @@ class PasteDocument {
        this.code = code;
        this.codeBox = codeBox;
        this.textArea = textArea;
+       this.key = null;
    }
 
    save(text) {
@@ -107,12 +110,41 @@ class PasteDocument {
                self.code.innerHTML = hljs.highlightAuto(response.text).value;
                self.textArea.readOnly = true;
                self.locked = true;
+
+               self.key = key;
            } else if(this.status === 404)
                window.location.href = window.location.href.split(key)[0];
 
        };
 
        request.open("GET", "/documents/" + key, true);
+       request.send();
+   }
+
+   delete() {
+       if(!this.key)
+           return;
+
+       const request = new XMLHttpRequest();
+       request.onreadystatechange = function() {
+           let response;
+           try {
+               response = JSON.parse(this.responseText);
+           } catch (e) {
+               console.log(e.message);
+               console.log("Response text: " + this.responseText);
+               return;
+           }
+
+           if(this.status === 200)
+               window.location.href = window.location.href.split(key)[0];
+           else if(this.status === 403) {
+               const message = response.message;
+               console.log("Failed to delete document: " + message)
+           }
+       };
+
+       request.open("GET", "/documents/delete/" + this.key, true);
        request.send();
    }
 
