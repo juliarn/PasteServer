@@ -36,6 +36,8 @@ To configure the document-storage
 *  user: The user to use for the authentication. (only ArangoDB)
 *  database: The database to store the documents in. (only ArangoDB)
 
+*  documentExpireInMs: The time in milliseconds after a document will be deleted when unused. (only Redis)
+
 ## Ratelimit-section
 To configure the rateLimits of creating documents
 
