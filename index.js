@@ -7,8 +7,8 @@ const config = require("./config");
 
 
 // bodyParser to handle requests in json-format
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.json({limit: config.document.dataLimit, extended: true}));
+app.use(bodyParser.urlencoded({limit: config.document.dataLimit, extended: true}));
 
 // setting route for the rest api
 app.use("/documents", require("./routes/documents"));

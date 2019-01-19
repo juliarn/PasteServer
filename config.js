@@ -6,7 +6,7 @@ module.exports = {
         type: "redis",
         host: "127.0.0.1",
         port: 6379,
-        password: "test",
+        password: "",
         // only arangodb
         user: "root",
         database: "pasteServer",
@@ -18,7 +18,8 @@ module.exports = {
         maxRequestsPerTime: 30
     },
     document: {
-        maxLength: 50000,
+        dataLimit: "10mb",
+        maxLength: 30000
     },
     keyGenerator: {
         keyLength: 10,

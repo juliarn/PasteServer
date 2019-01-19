@@ -27,7 +27,7 @@ router.post("/", rateLimitHandler, async (request, response) => {
         } else
             response.status(500).send(JSON.stringify({message: "Failed to save document"}));
     } else
-        response.status(406).send(JSON.stringify({message: `Text too long (max. ${maxLength})`}));
+        response.status(400).send(JSON.stringify({message: `Text too long (max. ${maxLength})`}));
 });
 
 router.get("/:key", async (request, response) => {
@@ -49,7 +49,6 @@ router.get("/delete/:key", rateLimitHandler, async (request, response) => {
     const key = request.params.key;
 
     response.setHeader("Content-Type", "application/json");
-    console.log(request.connection.remoteAddress);
 
     const creatorHash = crypto.createHash("sha256").update(request.connection.remoteAddress).digest("hex");
     if(await documentStorage.delete(key, creatorHash)) {

@@ -7,9 +7,10 @@ class RedisStorage {
     constructor(storageConfig) {
         this.client = redis.createClient({
             host: storageConfig.host,
-            port: storageConfig.port,
-            password: storageConfig.password
+            port: storageConfig.port
         });
+        if(storageConfig.password)
+            this.client.auth(storageConfig.password);
         this.client.on("error", error => console.log("Redis error occured", error));
         this.expire = storageConfig.documentExpireInMs;
     }
@@ -55,17 +56,17 @@ class RedisStorage {
 
                 if(!object || !object.creator)
                     resolve(false);
-                else {
-                    if(object.creator === creator) {
-                        self.client.del(key, error => {
-                            if(error) {
-                                console.error("Failed to delete document", error);
-                                resolve(false);
-                            }
-                            resolve(true);
-                        });
-                    }
-                }
+                else if(object.creator === creator) {
+                    self.client.del(key, error => {
+                        if(error) {
+                            console.error("Failed to delete document", error);
+                            resolve(false);
+                        }
+                        resolve(true);
+                    });
+                } else
+                    resolve(false);
+
             });
         });
     }

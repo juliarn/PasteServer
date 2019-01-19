@@ -45,6 +45,7 @@ To configure the rateLimits of creating documents
 ## Document-section
 To configure documents
 
+*  dataLimit: The max. size the data of a creation-request is allowed to have.
 *  maxLength: The max. characters a document is allowed to have.
 
 ## KeyGenerator-section

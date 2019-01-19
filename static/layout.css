@@ -1,6 +1,7 @@
 body {
     background-color: #2b2b2b;
     padding: 2% 4%;
+    font-family: monospace;
 }
 
 ::-webkit-scrollbar {
@@ -13,7 +14,6 @@ body {
 
 #codeBox {
     font-size: 1rem;
-    font-family: monospace;
     background: 0 0; !important;
     margin: 0;
     padding: 0;
@@ -21,7 +21,6 @@ body {
 
 textarea {
     font-size: 1rem;
-    font-family: monospace;
     color: white;
     background: 0 0;
     height: 100vh;
@@ -56,3 +55,41 @@ a {
     text-decoration: none;
     color: inherit;
 }
+
+.textBar {
+    visibility: hidden;
+    text-align: center;
+    background-color: black;
+    color: white;
+    border-radius: 4px;
+    padding: 1%;
+    position: fixed;
+    bottom: 5%;
+}
+
+.textBar.show {
+    visibility: visible;
+    animation: fadeIn 0.5s, fadeOut 0.5s 2.5s;
+    -webkit-animation: fadeIn 0.5s, fadeOut 0.5s 2.5s;
+}
+
+@keyframes fadeIn {
+    from {bottom: 0}
+    to {bottom: 5%}
+}
+
+@-webkit-keyframes fadeIn {
+    from {bottom: 0}
+    to {bottom: 5%}
+}
+
+@keyframes fadeOut {
+    from {bottom: 5%}
+    to {bottom: 0}
+}
+
+@-webkit-keyframes fadeOut {
+    from {bottom: 5%}
+    to {bottom: 0}
+}
+
