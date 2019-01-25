@@ -3,6 +3,7 @@ const router = express.Router();
 
 const crypto = require("crypto");
 const config = require("../config");
+const keyCreator = require("../storage/keyCreator");
 const documentStorage = config.storage.type === "arangodb" ? require("../storage/arangoStorage") : require("../storage/redisStorage");
 
 // Putting a rateLimit on the creating and deleting of documents to avoid crashes
@@ -19,11 +20,15 @@ router.post("/", rateLimitHandler, async (request, response) => {
 
     const maxLength = config.document.maxLength;
     if(text.length < maxLength) {
-        const creatorHash = crypto.createHash("sha256").update(request.connection.remoteAddress).digest("hex");
-        const key = await documentStorage.save(text, creatorHash);
-        if(key != null) {
+        const key = keyCreator.create();
+
+        const secretChars = "abcdefghijklmnopqrstuvwxyz0123456789!§$%&/()=?{[]}";
+        const deleteSecret = keyCreator.create(Math.floor(Math.random() * 16) + 12, secretChars + secretChars.toUpperCase());
+        const deleteSecretHash = crypto.createHash("sha256").update(deleteSecret).digest("hex");
+
+        if(await documentStorage.save(key, deleteSecretHash, text)) {
             console.log("Created document: " + key);
-            response.status(201).send(JSON.stringify({key: key}));
+            response.status(201).send(JSON.stringify({key: key, deleteSecret: deleteSecret}));
         } else
             response.status(500).send(JSON.stringify({message: "Failed to save document"}));
     } else
@@ -47,15 +52,21 @@ router.get("/:key", async (request, response) => {
 
 router.get("/delete/:key", rateLimitHandler, async (request, response) => {
     const key = request.params.key;
+    const deleteSecret = request.headers.deletesecret;
 
     response.setHeader("Content-Type", "application/json");
 
-    const creatorHash = crypto.createHash("sha256").update(request.connection.remoteAddress).digest("hex");
-    if(await documentStorage.delete(key, creatorHash)) {
+    if(!deleteSecret) {
+        response.status(400).send(JSON.stringify({message: "You have to enter the secret of the paste"}));
+        return;
+    }
+
+    const deleteSecretHash = crypto.createHash("sha256").update(deleteSecret).digest("hex");
+    if(await documentStorage.delete(key, deleteSecretHash)) {
         console.log("Deleted document: " + key);
         response.send(JSON.stringify({message: "Success"}));
     } else
-        response.status(403).send(JSON.stringify({message: "You are not the owner of this document or the document does not exist"}));
+        response.status(403).send(JSON.stringify({message: "You entered the wrong secret or the document does not exist"}));
 
 });
 

@@ -15,17 +15,16 @@ class RedisStorage {
         this.expire = storageConfig.documentExpireInMs;
     }
 
-    save(text, creator) {
+    save(key, deleteSecret, text) {
         const self = this;
-        const key = keyCreator.create();
         return new Promise(resolve => {
-            self.client.hmset(key, {text: text, creator: creator}, error => {
+            self.client.hmset(key, {text: text, deleteSecret: deleteSecret}, error => {
                 if(error) {
                     console.error("Failed to save document", error);
-                    resolve(null);
+                    resolve(false);
                 }
                 self.client.expire(key, self.expire);
-                resolve(key);
+                resolve(true);
             });
         });
     }
@@ -47,16 +46,16 @@ class RedisStorage {
         });
     }
 
-    delete(key, creator) {
+    delete(key, deleteSecret) {
         const self = this;
         return new Promise(resolve => {
             self.client.hgetall(key, (error, object) => {
                 if(error)
                     console.error("Failed to load document", error);
 
-                if(!object || !object.creator)
+                if(!object || !object.deleteSecret)
                     resolve(false);
-                else if(object.creator === creator) {
+                else if(object.deleteSecret === deleteSecret) {
                     self.client.del(key, error => {
                         if(error) {
                             console.error("Failed to delete document", error);

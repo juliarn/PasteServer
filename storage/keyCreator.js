@@ -7,12 +7,14 @@ class KeyCreator {
         this.keyLength = keyGeneratorConfig.keyLength;
     }
 
-    create() {
+    create(keyLength, chars) {
+        const length = keyLength || this.keyLength;
+        const keyChars = chars || this.chars;
         let key = "";
 
-        for(let i = 0; i < this.keyLength; i++) {
-            const random = Math.floor(Math.random() * this.chars.length);
-            key += this.chars[random];
+        for(let i = 0; i < length; i++) {
+            const random = Math.floor(Math.random() * keyChars.length);
+            key += keyChars[random];
         }
 
         return key;

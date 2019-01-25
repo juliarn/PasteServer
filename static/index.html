@@ -6,6 +6,7 @@
     <title>PasteServer</title>
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/androidstudio.min.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
     <link rel="stylesheet" type="text/css" href="layout.css">
 </head>
 <body>
@@ -18,10 +19,27 @@
     <a href="https://github.com/realPanamo/PasteServer"><i id="codeButton" title="View code" class="material-icons">code</i></a>
 </div>
 
+<div id="deleteModal" class="modal grey darken-3 white-text">
+    <div class="modal-content">
+        <h4>Delete document</h4>
+        <p>Enter the document-secret to delete it.</p>
+        <div class="input-field">
+            <input id="deleteSecretInput" type="text">
+            <label for="deleteSecretInput">Delete-Secret</label>
+        </div>
+
+    </div>
+    <div class="modal-footer grey darken-3 white-text">
+        <a class="modal-close waves-effect waves-green btn-flat white-text">Cancel</a>
+        <a id="modalDeleteButton" class="modal-close waves-effect waves-green btn-flat white-text">Delete</a>
+    </div>
+</div>
+
 <pre id="codeBox" class="hljs"><code></code></pre>
 <textarea class="textArea" spellcheck="false"></textarea>
-<div class="textBar"></div>
+<div class="textBar"><p></p><i class="material-icons">close</i></div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/highlight.min.js"></script>
 <script type="text/javascript" src="application.js"></script>
 </body>

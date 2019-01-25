@@ -1,7 +1,6 @@
 body {
     background-color: #2b2b2b;
     padding: 2% 4%;
-    font-family: monospace;
 }
 
 ::-webkit-scrollbar {
@@ -17,11 +16,13 @@ body {
     background: 0 0; !important;
     margin: 0;
     padding: 0;
+    font-family: monospace;
 }
 
 textarea {
     font-size: 1rem;
     color: white;
+    font-family: monospace;
     background: 0 0;
     height: 100vh;
     width: 100%;
@@ -33,6 +34,7 @@ textarea {
 .buttons {
     background-color: #515658;
     border-top: 6px gray solid;
+    padding: 0.4%;
     bottom: 0;
     right: 0;
     display: inline-grid;
@@ -42,9 +44,7 @@ textarea {
 }
 
 i.material-icons {
-    padding: 15%;
     font-size: 2rem;
-    display: inline-block;
 }
 
 i.material-icons:hover {
@@ -57,21 +57,30 @@ a {
 }
 
 .textBar {
+    display: flex;
     visibility: hidden;
     text-align: center;
     background-color: black;
     color: white;
+    font-family: monospace;
     border-radius: 4px;
-    padding: 1%;
+    padding: 0.6% 0.6% 0.8% 0.8%;
     position: fixed;
     bottom: 5%;
 }
 
+.textBar > i.material-icons {
+    font-size: 0.8rem;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+}
+
 .textBar.show {
     visibility: visible;
-    animation: fadeIn 0.5s, fadeOut 0.5s 2.5s;
-    -webkit-animation: fadeIn 0.5s, fadeOut 0.5s 2.5s;
+    animation: fadeIn 0.5s;
+    -webkit-animation: fadeIn 0.5s;
 }
+
 
 @keyframes fadeIn {
     from {bottom: 0}
@@ -83,13 +92,19 @@ a {
     to {bottom: 5%}
 }
 
-@keyframes fadeOut {
-    from {bottom: 5%}
-    to {bottom: 0}
+
+/* Materialize */
+
+.input-field input:focus + label {
+    color: #9e9e9e !important;
 }
 
-@-webkit-keyframes fadeOut {
-    from {bottom: 5%}
-    to {bottom: 0}
+.input-field input:focus {
+    border-bottom: 1px solid #9e9e9e !important;
+    box-shadow: 0 1px 0 0 #9e9e9e !important
+}
+
+input {
+    color: #e0e0e0 !important;
 }
 

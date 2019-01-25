@@ -1,5 +1,4 @@
 const config = require("../config");
-const keyCreator = require("./keyCreator");
 const {Database} = require("arangojs");
 
 class ArangoStorage {
@@ -27,18 +26,18 @@ class ArangoStorage {
     }
 
 
-    async save(text, creator) {
-        const key = keyCreator.create();
+    async save(key, deleteSecret, text) {
         try {
             await this.collection.save({
                 _key: key,
                 text: text,
-                creator: creator
+                deleteSecret: deleteSecret
             });
         } catch (error) {
             console.error("Failed to save document", error);
+            return false;
         }
-        return key;
+        return true;
     }
 
     async load(key) {
@@ -53,12 +52,12 @@ class ArangoStorage {
         return null;
     }
 
-    async delete(key, creator) {
+    async delete(key, deleteSecret) {
         if(!await this.collection.documentExists(key))
             return false;
         try {
             const document = await this.collection.document(key);
-            if(document.creator && document.creator === creator) {
+            if(document.deleteSecret && document.deleteSecret === deleteSecret) {
                 await this.collection.remove(key);
                 return true;
             }

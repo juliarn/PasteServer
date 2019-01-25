@@ -18,12 +18,14 @@ class PasteDocument {
                 if(response) {
                     if (this.status === 201) {
                         const key = response.key;
-                        window.location.href = window.location.href + key;
+                        window.history.pushState({}, "PasteServer", "/" + key);
+                        self.load(key);
+                        self.pasteServer.showTextBar("Secret to delete paste: " + response.deleteSecret);
                     } else if (this.status === 400) {
                         const message = response.message;
-                        self.pasteServer.showTextBar("Error while saving: " + message);
+                        self.pasteServer.showTextBar("Error while saving: " + message, 3000);
                     } else
-                        self.pasteServer.showTextBar("Unexpected error occurred while saving");
+                        self.pasteServer.showTextBar("Unexpected error occurred while saving", 3000);
                 }
             };
             request.open("POST", "/documents", true);
@@ -56,7 +58,7 @@ class PasteDocument {
         request.send();
     }
 
-    delete() {
+    delete(secret) {
         if(!this.key || !this.locked)
             return;
 
@@ -67,15 +69,16 @@ class PasteDocument {
             if(response) {
                 if (this.status === 200)
                     window.location.href = window.location.href.split(self.key)[0];
-                else if (this.status === 403) {
+                else if (this.status === 403 || this.status === 400) {
                     const message = response.message;
-                    self.pasteServer.showTextBar("Failed to delete document: " + message);
+                    self.pasteServer.showTextBar("Failed to delete document: " + message, 3000);
                 } else
-                    self.pasteServer.showTextBar("Unexpected error occurred while deleting");
+                    self.pasteServer.showTextBar("Unexpected error occurred while deleting", 3000);
             }
         };
 
         request.open("GET", "/documents/delete/" + this.key, true);
+        request.setRequestHeader("deleteSecret", secret);
         request.send();
     }
 
@@ -110,6 +113,11 @@ class PasteServer {
         this.textArea = document.querySelector("textarea");
         this.textBar = document.querySelector(".textBar");
 
+        this.textBar.querySelector("i").addEventListener("click", () => this.hideTextBar());
+        this.textBarText = this.textBar.querySelector("p");
+
+        this.deleteSecretInput = document.getElementById("deleteSecretInput");
+
         PasteServer.showElement(this.codeBox, false);
 
         this.currentDocument = new PasteDocument(this);
@@ -119,7 +127,12 @@ class PasteServer {
         this.newDocButton = document.getElementById("newDocButton");
         this.deleteButton = document.getElementById("deleteButton");
 
+        this.modalDeleteButton = document.getElementById("modalDeleteButton");
+
         this.setupButtons();
+
+        M.Modal.init(document.querySelectorAll(".modal"));
+        this.deleteModal = M.Modal.getInstance(document.getElementById("deleteModal"));
 
         const url = window.location.href.split("/");
         if(url.length > 3) {
@@ -152,14 +165,21 @@ class PasteServer {
             if(url.length > 2)
                 window.location.href = "http://" + url[2];
         });
-        this.deleteButton.addEventListener("click", () => this.currentDocument.delete());
+        this.deleteButton.addEventListener("click", () => this.deleteModal.open());
+
+        this.modalDeleteButton.addEventListener("click", () => this.currentDocument.delete(this.deleteSecretInput.value))
     }
 
-    showTextBar(text) {
-        this.textBar.innerText = text;
+    showTextBar(text, time) {
+        this.textBarText.innerText = text;
         this.textBar.classList.add("show");
 
-        setTimeout(() => this.textBar.classList.remove("show"), 3000);
+        if(time)
+            setTimeout(() => this.hideTextBar(), time);
+    }
+
+    hideTextBar() {
+        this.textBar.classList.remove("show");
     }
 
 }
