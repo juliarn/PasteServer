@@ -71,9 +71,10 @@ router.get("/delete/:key", rateLimitHandler, async (request, response) => {
 });
 
 router.get("/", (request, response) => {
-    response.send("Usage of the REST-API - Post to this route: Send a json which contains the key 'text' and the wanted text as value. " +
-        "Response: json which contains the key 'key' for the key or 'message' when something went wrong. Get to this route: " +
-        "Create a get request to this route + /[key]. Response: json which contains the key 'text' for the text or 'message' when something went wrong.");
+    response.send("Usage of the REST-API - Create a document (post-request): Send a JSON which contains the key 'text' and the wanted text as value. " +
+        "Response: JSON which contains the key 'key' for the key, the key 'deleteSecret' for the document-secret or 'message' when something went wrong. " +
+        "Get a document (get-request): Create a get request to this route + /[key]. Response: JSON which contains the key 'text' for the text or 'message' when something went wrong. " +
+        "Delete a document (get-request): Create a get request to this route + /delete/[key] and add a header 'deleteSecret'. Response: JSON which contains the key 'message'.");
 });
 
 module.exports = router;
