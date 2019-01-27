@@ -1,3 +1,114 @@
+class PasteServer {
+
+    static showElement(element, show) {
+        if(show)
+            element.classList.remove("invisible");
+        else
+            element.classList.add("invisible");
+    }
+
+
+    static parseResponse(text) {
+        if (text.trim() === "") {
+            console.log("Received empty response");
+            return null;
+        }
+        try {
+            return JSON.parse(text);
+        } catch (error) {
+            console.log("Failed to parse response: " + error.message);
+            return null;
+        }
+    }
+
+    constructor() {
+        this.codeBox = document.getElementById("codeBox");
+        this.code = this.codeBox.querySelector("code");
+        this.textArea = document.querySelector("textarea");
+        this.textBar = new TextBar(document.querySelector(".textBar"));
+
+        PasteServer.showElement(this.codeBox, false);
+
+        this.currentDocument = new PasteDocument(this);
+
+        this.setupButtons();
+        this.setupModals();
+
+        const url = window.location.href.split("/");
+        if(url.length > 3) {
+            const key = url[3];
+            if(key.trim() !== "")
+                this.currentDocument.load(key);
+        }
+    }
+
+    setupButtons() {
+        document.getElementById("saveButton").addEventListener("click", () => this.currentDocument.save(this.textArea.value));
+        document.getElementById("copyButton").addEventListener("click", () => {
+            if (this.currentDocument.locked) {
+                if (document.selection) {
+                    const range = document.body.createTextRange();
+                    range.moveToElementText(code);
+                    range.select();
+                } else if (window.getSelection) {
+                    const range = document.createRange();
+                    range.selectNode(code);
+                    window.getSelection().removeAllRanges();
+                    window.getSelection().addRange(range);
+                }
+            } else
+                this.textArea.select();
+            document.execCommand("copy");
+        });
+        document.getElementById("newDocButton").addEventListener("click", () => {
+            const url = window.location.href.split("/");
+            if(url.length > 2)
+                window.location.href = "http://" + url[2];
+        });
+        document.getElementById("deleteButton").addEventListener("click", () => {
+            if(this.currentDocument.locked)
+                this.deleteModal.open();
+        });
+
+    }
+
+    setupModals() {
+        M.Modal.init(document.querySelectorAll(".modal"), {
+            onCloseEnd: () => {
+                this.deleteSecretInput.value = "";
+                this.deleteSecretInput.nextElementSibling.classList.remove("active");
+            }
+        });
+        this.deleteModal = M.Modal.getInstance(document.getElementById("deleteModal"));
+        this.deleteSecretInput = document.getElementById("deleteSecretInput");
+        document.getElementById("modalDeleteButton").addEventListener("click", () => this.currentDocument.delete(this.deleteSecretInput.value));
+    }
+
+
+}
+
+class TextBar {
+
+    constructor(element) {
+        this.textBarElement = element;
+        element.querySelector("i").addEventListener("click", () => this.hide());
+        this.textBarText = element.querySelector("p");
+    }
+
+    show(text, time) {
+        this.textBarText.innerText = text;
+        this.textBarElement.classList.add("show");
+
+        if(time)
+            setTimeout(() => this.hide(), time);
+    }
+
+    hide() {
+        this.textBarElement.classList.remove("show");
+    }
+
+}
+
 class PasteDocument {
 
     constructor(pasteServer) {
@@ -20,12 +131,12 @@ class PasteDocument {
                         const key = response.key;
                         window.history.pushState({}, "PasteServer", "/" + key);
                         self.load(key);
-                        self.pasteServer.showTextBar("Secret to delete paste: " + response.deleteSecret);
+                        self.pasteServer.textBar.show("Secret to delete paste: " + response.deleteSecret);
                     } else if (this.status === 400) {
                         const message = response.message;
-                        self.pasteServer.showTextBar("Error while saving: " + message, 3000);
+                        self.pasteServer.textBar.show("Error while saving: " + message, 3000);
                     } else
-                        self.pasteServer.showTextBar("Unexpected error occurred while saving", 3000);
+                        self.pasteServer.textBar.show("Unexpected error occurred while saving", 3000);
                 }
             };
             request.open("POST", "/documents", true);
@@ -71,9 +182,9 @@ class PasteDocument {
                     window.location.href = window.location.href.split(self.key)[0];
                 else if (this.status === 403 || this.status === 400) {
                     const message = response.message;
-                    self.pasteServer.showTextBar("Failed to delete document: " + message, 3000);
+                    self.pasteServer.textBar.show("Failed to delete document: " + message, 3000);
                 } else
-                    self.pasteServer.showTextBar("Unexpected error occurred while deleting", 3000);
+                    self.pasteServer.textBar.show("Unexpected error occurred while deleting", 3000);
             }
         };
 
@@ -84,105 +195,6 @@ class PasteDocument {
 
 }
 
-class PasteServer {
-
-    static showElement(element, show) {
-        if(show)
-            element.classList.remove("invisible");
-        else
-            element.classList.add("invisible");
-    }
-
-
-    static parseResponse(text) {
-        if (text.trim() === "") {
-            console.log("Received empty response");
-            return null;
-        }
-        try {
-            return JSON.parse(text);
-        } catch (error) {
-            console.log("Failed to parse response: " + error.message);
-            return null;
-        }
-    }
-
-    constructor() {
-        this.codeBox = document.getElementById("codeBox");
-        this.code = this.codeBox.querySelector("code");
-        this.textArea = document.querySelector("textarea");
-        this.textBar = document.querySelector(".textBar");
-
-        this.textBar.querySelector("i").addEventListener("click", () => this.hideTextBar());
-        this.textBarText = this.textBar.querySelector("p");
-
-        this.deleteSecretInput = document.getElementById("deleteSecretInput");
-
-        PasteServer.showElement(this.codeBox, false);
-
-        this.currentDocument = new PasteDocument(this);
-
-        this.saveButton = document.getElementById("saveButton");
-        this.copyButton = document.getElementById("copyButton");
-        this.newDocButton = document.getElementById("newDocButton");
-        this.deleteButton = document.getElementById("deleteButton");
-
-        this.modalDeleteButton = document.getElementById("modalDeleteButton");
-
-        this.setupButtons();
-
-        M.Modal.init(document.querySelectorAll(".modal"));
-        this.deleteModal = M.Modal.getInstance(document.getElementById("deleteModal"));
-
-        const url = window.location.href.split("/");
-        if(url.length > 3) {
-            const key = url[3];
-            if(key.trim() !== "")
-                this.currentDocument.load(key);
-        }
-    }
-
-    setupButtons() {
-        this.saveButton.addEventListener("click", () => this.currentDocument.save(this.textArea.value));
-        this.copyButton.addEventListener("click", () => {
-            if (this.currentDocument.locked) {
-                if (document.selection) {
-                    const range = document.body.createTextRange();
-                    range.moveToElementText(code);
-                    range.select();
-                } else if (window.getSelection) {
-                    const range = document.createRange();
-                    range.selectNode(code);
-                    window.getSelection().removeAllRanges();
-                    window.getSelection().addRange(range);
-                }
-            } else
-                this.textArea.select();
-            document.execCommand("copy");
-        });
-        this.newDocButton.addEventListener("click", () => {
-            const url = window.location.href.split("/");
-            if(url.length > 2)
-                window.location.href = "http://" + url[2];
-        });
-        this.deleteButton.addEventListener("click", () => this.deleteModal.open());
-
-        this.modalDeleteButton.addEventListener("click", () => this.currentDocument.delete(this.deleteSecretInput.value))
-    }
-
-    showTextBar(text, time) {
-        this.textBarText.innerText = text;
-        this.textBar.classList.add("show");
-
-        if(time)
-            setTimeout(() => this.hideTextBar(), time);
-    }
-
-    hideTextBar() {
-        this.textBar.classList.remove("show");
-    }
-
-}
 
 document.addEventListener("DOMContentLoaded", () => new PasteServer());
 
