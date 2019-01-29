@@ -12,7 +12,8 @@ body {
 }
 
 #codeBox {
-    font-size: 1rem;
+    font-size: 0.8rem;
+    line-height: 15px;
     background: 0 0; !important;
     margin: 0;
     padding: 0;
@@ -20,7 +21,8 @@ body {
 }
 
 textarea {
-    font-size: 1rem;
+    font-size: 0.8rem;
+    line-height: 15px;
     color: white;
     font-family: monospace;
     background: 0 0;
