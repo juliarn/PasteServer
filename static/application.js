@@ -48,11 +48,11 @@ class PasteServer {
             if (this.currentDocument.locked) {
                 if (document.selection) {
                     const range = document.body.createTextRange();
-                    range.moveToElementText(code);
+                    range.moveToElementText(this.code);
                     range.select();
                 } else if (window.getSelection) {
                     const range = document.createRange();
-                    range.selectNode(code);
+                    range.selectNode(this.code);
                     window.getSelection().removeAllRanges();
                     window.getSelection().addRange(range);
                 }
