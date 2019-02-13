@@ -28,11 +28,11 @@ router.post("/", rateLimitHandler, async (request, response) => {
 
         if(await documentStorage.save(key, deleteSecretHash, text)) {
             console.log("Created document: " + key);
-            response.status(201).send(JSON.stringify({key: key, deleteSecret: deleteSecret}));
+            response.status(201).json({key: key, deleteSecret: deleteSecret});
         } else
-            response.status(500).send(JSON.stringify({message: "Failed to save document"}));
+            response.status(500).json({message: "Failed to save document"});
     } else
-        response.status(400).send(JSON.stringify({message: `Text too long (max. ${maxLength})`}));
+        response.status(400).json({message: `Text too long (max. ${maxLength})`});
 });
 
 router.get("/:key", async (request, response) => {
@@ -43,10 +43,10 @@ router.get("/:key", async (request, response) => {
     const text = await documentStorage.load(key);
 
     if(text == null)
-        response.status(404).send(JSON.stringify({message: "No document found"}));
+        response.status(404).json({message: "No document found"});
     else {
         console.log("Sending document: " + key);
-        response.send(JSON.stringify({text: text}));
+        response.json({text: text});
     }
 });
 
@@ -57,16 +57,16 @@ router.get("/delete/:key", rateLimitHandler, async (request, response) => {
     response.setHeader("Content-Type", "application/json");
 
     if(!deleteSecret) {
-        response.status(400).send(JSON.stringify({message: "You have to enter the secret of the paste"}));
+        response.status(400).json({message: "You have to enter the secret of the paste"});
         return;
     }
 
     const deleteSecretHash = crypto.createHash("sha256").update(deleteSecret).digest("hex");
     if(await documentStorage.delete(key, deleteSecretHash)) {
         console.log("Deleted document: " + key);
-        response.send(JSON.stringify({message: "Success"}));
+        response.json({message: "Success"});
     } else
-        response.status(403).send(JSON.stringify({message: "You entered the wrong secret or the document does not exist"}));
+        response.status(403).json({message: "You entered the wrong secret or the document does not exist"});
 
 });
 
