@@ -18,8 +18,8 @@ module.exports = {
         maxRequestsPerTime: 30
     },
     document: {
-        dataLimit: "10mb",
-        maxLength: 30000
+        dataLimit: "2mb",
+        maxLength: 400000
     },
     keyGenerator: {
         keyLength: 10,

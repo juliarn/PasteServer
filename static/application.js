@@ -7,12 +7,10 @@ class PasteServer {
             element.classList.add("invisible");
     }
 
-
     static parseResponse(text) {
-        if (text.trim() === "") {
-            console.log("Received empty response");
+        if (text.trim() === "")
             return null;
-        }
+
         try {
             return JSON.parse(text);
         } catch (error) {
@@ -22,6 +20,7 @@ class PasteServer {
     }
 
     constructor() {
+        this.codeLines = document.getElementById("codeLines");
         this.codeBox = document.getElementById("codeBox");
         this.code = this.codeBox.querySelector("code");
         this.textArea = document.querySelector("textarea");
@@ -84,7 +83,18 @@ class PasteServer {
         document.getElementById("modalDeleteButton").addEventListener("click", () => this.currentDocument.delete(this.deleteSecretInput.value));
     }
 
+    loadCodeLines(lineCount) {
+        while (this.codeLines.firstChild)
+            this.codeLines.removeChild(this.codeLines.firstChild);
 
+        for(let i = 1; i < lineCount + 1; i++) {
+            const lineTextNode = document.createTextNode(i.toString());
+            const lineBreakElement = document.createElement("br");
+
+            this.codeLines.appendChild(lineTextNode);
+            this.codeLines.appendChild(lineBreakElement);
+        }
+    }
 }
 
 class TextBar {
@@ -154,6 +164,10 @@ class PasteDocument {
                 if (this.status === 200) {
                     PasteServer.showElement(self.pasteServer.codeBox, true);
                     PasteServer.showElement(self.pasteServer.textArea, false);
+
+                    document.title = "PasteServer - " + key;
+
+                    self.pasteServer.loadCodeLines(response.text.split("\n").length);
 
                     self.pasteServer.code.innerHTML = hljs.highlightAuto(response.text).value;
                     self.pasteServer.textArea.readOnly = true;
