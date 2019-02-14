@@ -32,7 +32,7 @@ router.post("/", rateLimitHandler, async (request, response) => {
         } else
             response.status(500).json({message: "Failed to save document"});
     } else
-        response.status(400).json({message: `Text too long (max. ${maxLength})`});
+        response.status(403).json({message: `Text too long (max. ${maxLength})`});
 });
 
 router.get("/:key", async (request, response) => {
@@ -71,10 +71,7 @@ router.get("/delete/:key", rateLimitHandler, async (request, response) => {
 });
 
 router.get("/", (request, response) => {
-    response.send("Usage of the REST-API - Create a document (post-request): Send a JSON which contains the key 'text' and the wanted text as value. " +
-        "Response: JSON which contains the key 'key' for the key, the key 'deleteSecret' for the document-secret or 'message' when something went wrong. " +
-        "Get a document (get-request): Create a get request to this route + /[key]. Response: JSON which contains the key 'text' for the text or 'message' when something went wrong. " +
-        "Delete a document (get-request): Create a get request to this route + /delete/[key] and add a header 'deleteSecret'. Response: JSON which contains the key 'message'.");
+    response.send("Route for the PasteServer-API. More info here: https://github.com/realPanamo/PasteServer/blob/master/README.md");
 });
 
 module.exports = router;
