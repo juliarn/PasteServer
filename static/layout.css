@@ -2,7 +2,7 @@
     --font-size: 12px;
     --line-height: 15px;
     --font-family: monospace;
-    --box-padding: 1.5% 2.5%;
+    --box-padding: 1.5% 2.5% 2.5% 2%;
 }
 
 body {
