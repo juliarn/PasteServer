@@ -142,7 +142,7 @@ class PasteDocument {
                         window.history.pushState({}, "PasteServer", "/" + key);
                         self.load(key);
                         self.pasteServer.textBar.show("Secret to delete paste: " + response.deleteSecret);
-                    } else if (this.status === 403) {
+                    } else if (this.status === 413) {
                         const message = response.message;
                         self.pasteServer.textBar.show("Error while saving: " + message, 3000);
                     } else
@@ -206,9 +206,7 @@ class PasteDocument {
         request.setRequestHeader("deleteSecret", secret);
         request.send();
     }
-
 }
-
 
 document.addEventListener("DOMContentLoaded", () => new PasteServer());
 
