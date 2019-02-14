@@ -32,7 +32,7 @@ router.post("/", rateLimitHandler, async (request, response) => {
         } else
             response.status(500).json({message: "Failed to save document"});
     } else
-        response.status(403).json({message: `Text too long (max. ${maxLength})`});
+        response.status(413).json({message: `Text too long (max. ${maxLength})`});
 });
 
 router.get("/:key", async (request, response) => {
