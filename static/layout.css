@@ -85,16 +85,19 @@ a {
     text-align: center;
     background-color: black;
     color: white;
-    font-family: monospace;
-    border-radius: 4px;
-    padding: 0.6% 0.6% 0.8% 0.8%;
+    font-family: var(--font-family);
+    border-radius: 5px;
+    padding: 0.4% 0.5% 0.4% 0.9%;
     position: fixed;
     bottom: 5%;
     left: 5%;
 }
 
 .textBar > i.material-icons {
-    font-size: 0.8rem;
+    height: 20%;
+    right: 0;
+    top: 0;
+    font-size: 0.9rem;
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;

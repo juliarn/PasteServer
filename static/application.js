@@ -30,6 +30,7 @@ class PasteServer {
 
         this.currentDocument = new PasteDocument(this);
 
+        this.setupShortcuts();
         this.setupButtons();
         this.setupModals();
 
@@ -41,17 +42,41 @@ class PasteServer {
         }
     }
 
+    setupShortcuts() {
+        document.addEventListener("keydown", keyDownEvent => {
+            if(keyDownEvent.ctrlKey) {
+                switch (keyDownEvent.code) {
+                    case "KeyS":
+                        this.currentDocument.save(this.textArea.value);
+                        keyDownEvent.preventDefault();
+                        break;
+                    case "KeyN":
+                        const url = window.location.href.split("/");
+                        if(url.length > 2)
+                            window.location.href = "http://" + url[2];
+                        keyDownEvent.preventDefault();
+                        break;
+                    case "KeyD":
+                        if(this.currentDocument.locked)
+                            this.deleteModal.open();
+                        keyDownEvent.preventDefault();
+                        break;
+                }
+            }
+        });
+    }
+
     setupButtons() {
         document.getElementById("saveButton").addEventListener("click", () => this.currentDocument.save(this.textArea.value));
         document.getElementById("copyButton").addEventListener("click", () => {
             if (this.currentDocument.locked) {
                 if (document.selection) {
                     const range = document.body.createTextRange();
-                    range.moveToElementText(code);
+                    range.moveToElementText(this.code);
                     range.select();
                 } else if (window.getSelection) {
                     const range = document.createRange();
-                    range.selectNode(code);
+                    range.selectNode(this.code);
                     window.getSelection().removeAllRanges();
                     window.getSelection().addRange(range);
                 }
@@ -114,6 +139,7 @@ class TextBar {
     }
 
     hide() {
+        this.textBarText.innerText = "";
         this.textBarElement.classList.remove("show");
     }
 

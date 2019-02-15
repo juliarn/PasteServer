@@ -1,5 +1,4 @@
 const config = require("../config");
-const keyCreator = require("./keyCreator");
 const redis = require("redis");
 
 class RedisStorage {
