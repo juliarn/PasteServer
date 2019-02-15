@@ -30,6 +30,7 @@ class PasteServer {
 
         this.currentDocument = new PasteDocument(this);
 
+        this.setupShortcuts();
         this.setupButtons();
         this.setupModals();
 
@@ -39,6 +40,30 @@ class PasteServer {
             if(key.trim() !== "")
                 this.currentDocument.load(key);
         }
+    }
+
+    setupShortcuts() {
+        document.addEventListener("keydown", keyDownEvent => {
+            if(keyDownEvent.ctrlKey) {
+                switch (keyDownEvent.code) {
+                    case "KeyS":
+                        this.currentDocument.save(this.textArea.value);
+                        keyDownEvent.preventDefault();
+                        break;
+                    case "KeyN":
+                        const url = window.location.href.split("/");
+                        if(url.length > 2)
+                            window.location.href = "http://" + url[2];
+                        keyDownEvent.preventDefault();
+                        break;
+                    case "KeyD":
+                        if(this.currentDocument.locked)
+                            this.deleteModal.open();
+                        keyDownEvent.preventDefault();
+                        break;
+                }
+            }
+        });
     }
 
     setupButtons() {
@@ -114,6 +139,7 @@ class TextBar {
     }
 
     hide() {
+        this.textBarText.innerText = "";
         this.textBarElement.classList.remove("show");
     }
 
