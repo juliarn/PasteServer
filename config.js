@@ -2,6 +2,11 @@ module.exports = {
     server: {
         port: 5000
     },
+    autoUpdate: {
+        enabled: false,
+        packageJsonLink: "https://raw.githubusercontent.com/realPanamo/PasteServer/master/package.json",
+        keepFiles: ["config.js"]
+    },
     storage: {
         type: "redis",
         host: "127.0.0.1",
