@@ -4,8 +4,9 @@ module.exports = {
     },
     autoUpdate: {
         enabled: false,
-        packageJsonLink: "https://raw.githubusercontent.com/realPanamo/PasteServer/master/package.json",
-        keepFiles: ["config.js"]
+        packageJsonURL: "https://raw.githubusercontent.com/realPanamo/PasteServer/master/package.json",
+        zipURL: "https://github.com/realPanamo/PasteServer/archive/master.zip",
+        keepFilesOrDirs: ["config.js"]
     },
     storage: {
         type: "redis",

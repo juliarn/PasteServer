@@ -8,8 +8,10 @@
     const autoUpdater = require("./autoUpdater");
 
     const updateAvailable = await autoUpdater.checkForUpdates(require("./package.json").version);
-    if(updateAvailable && config.autoUpdate.enabled)
-        autoUpdater.downloadUpdate();
+    if(updateAvailable && config.autoUpdate.enabled) {
+        if(await autoUpdater.downloadUpdate())
+            await autoUpdater.installUpdate();
+    }
 
     // bodyParser to handle requests in json-format
     app.use(bodyParser.json({limit: config.document.dataLimit, extended: true}));
