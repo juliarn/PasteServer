@@ -15,17 +15,19 @@ class AutoUpdater {
         return new Promise(resolve => {
             request(config.autoUpdate.packageJsonURL, {json: true}, (error, response, body) => {
                 if(error) {
-                console.error("Error while checking for a newer version", error);
-                resolve(false);
-                return;
-            }
+                    console.error("Error while checking for updates", error);
+                    resolve(false);
+                    return;
+                }
 
-            const newestVersion = body.version;
-            if(newestVersion !== currentVersion) {
-                console.log(`There's a newer version of the PasteServer available (${newestVersion})! Enable 'autoUpdate' in the config to download it!`);
-                resolve(true);
-            } else
-                resolve(false);
+                const newestVersion = body.version;
+                if(newestVersion !== currentVersion) {
+                    console.log(`There's a newer version of the PasteServer available (${newestVersion})!`);
+                    if(!config.autoUpdate.enabled)
+                        console.log("Enable 'autoUpdate' in the config to download it!");
+                    resolve(true);
+                } else
+                    resolve(false);
             });
         });
     }
@@ -33,7 +35,8 @@ class AutoUpdater {
     downloadUpdate() {
         console.log("Downloading update ...");
         return new Promise(resolve => {
-            fs.mkdirSync(".update");
+            if(!fs.existsSync(".update"))
+                fs.mkdirSync(".update");
             request(config.autoUpdate.zipURL).on("error", error => {
                 console.error("Error while downloading update", error);
                 resolve(false);

@@ -1,7 +1,9 @@
 {
   "name": "server",
-  "version": "1.8.2",
+  "version": "1.9.1",
   "description": "PasteServer to upload text or code",
+  "repository": "https://github.com/realPanamo/PasteServer",
+  "readme": "See README.md",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
