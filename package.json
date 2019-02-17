@@ -1,7 +1,9 @@
 {
   "name": "server",
-  "version": "1.0.0",
+  "version": "1.9.1",
   "description": "PasteServer to upload text or code",
+  "repository": "https://github.com/realPanamo/PasteServer",
+  "readme": "See README.md",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
@@ -13,7 +15,10 @@
     "body-parser": "latest",
     "express": "^4.16.4",
     "express-rate-limit": "^3.3.2",
+    "fs-extra": "latest",
     "redis": "^2.8.0",
-    "serve-static": "^1.13.2"
+    "request": "latest",
+    "serve-static": "^1.13.2",
+    "unzip": "^0.1.11"
   }
 }
