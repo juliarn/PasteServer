@@ -60,6 +60,16 @@ textarea {
     user-select: none;
 }
 
+.versionDisplay {
+    font-family: var(--font-family);
+    font-size: 11px;
+    color: #787878;
+    top: 0;
+    right: 0;
+    position: absolute;
+    padding: 8px;
+}
+
 .invisible {
     display: none !important;
 }
