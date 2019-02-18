@@ -26,6 +26,15 @@ To configure the server itself
 
 *  **port**: The port where the server will run on.
 
+## autoUpdate-section
+To configure the updating of the server
+
+* **enabled**: If the server should perform autoUpdates before starting.
+* **packageJsonURL**: The URL of the package.json file of the remote pasteServer.
+* **zipURL**: The URL of the zip-archive with the files in it.
+* **keepFiles**: The files which shouldn't be replaced when installing an update. Works too for files in dirs.
+(use for example: ``static/index.html``).
+
 ## Storage-section
 To configure the document-storage
 
@@ -39,8 +48,8 @@ To configure the document-storage
 
 *  **documentExpireInMs**: The time in milliseconds after a document will be deleted when unused. (only Redis)
 
-## Ratelimit-section
-To configure the rateLimits of creating documents
+## RateLimit-section
+To configure the rateLimits of creating and deleting documents
 
 *  **timeInMs**: The time in milliseconds in which a certain amount of requests are allowed per IP.
 *  **maxRequestsPerTime**: The allowed amount of requests per IP per time.
@@ -58,6 +67,7 @@ To configure the creation of the document-keys
 *  **keyChars**: The characters that will be used to create a key.
 *  **withToUpperCase**: When set to true, the keyChars will be duplicated and added to the current 
 keyChars but with all letters in uppercase.
+
 
 # API
 
@@ -126,3 +136,12 @@ If the secret or the key is wrong, this:
 Every response contains this:
 
  * **Body**: A JSON containing the key ```message``` for a short description of what happened.
+ 
+## RateLimits
+
+There are rateLimits on creating and deleting documents to prevent attacks that might cause a crash.
+The amount of allowed requests per time per ip can be changed in the ``config.js``.
+Once the rateLimit is reached, you'll get the following response:
+
+* **Status-Code**: 429 Too Many Requests
+* **Body**: A JSON containing the key ```message``` for a short description of what happened.

@@ -10,7 +10,8 @@ const documentStorage = config.storage.type === "arangodb" ? require("../storage
 const rateLimit = require("express-rate-limit");
 const rateLimitHandler = rateLimit({
     windowMs: config.createRateLimit.timeInMs,
-    max: config.createRateLimit.maxRequestsPerTime
+    max: config.createRateLimit.maxRequestsPerTime,
+    message: {message: "Request limit reached. Try again later"}
 });
 
 router.post("/", rateLimitHandler, async (request, response) => {

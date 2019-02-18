@@ -54,20 +54,17 @@ textarea {
     right: 0;
     display: inline-grid;
     position: fixed;
+    text-align: center;
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
 }
 
-.versionDisplay {
+.buttons > p {
     font-family: var(--font-family);
-    font-size: 11px;
-    color: #787878;
-    top: 0;
-    right: 0;
-    position: absolute;
-    padding: 8px;
+    margin: 0;
+    padding: 0;
 }
 
 .invisible {
