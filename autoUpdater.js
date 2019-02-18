@@ -57,7 +57,7 @@ class AutoUpdater {
                     if(!contentFolderName && isDir)
                         contentFolderName = entry.path;
                     const fileName = entry.path.replace(contentFolderName, "");
-                    if (fileName && !config.autoUpdate.keepFilesOrDirs.includes(fileName)) {
+                    if (fileName && !config.autoUpdate.keepFiles.includes(fileName)) {
                         const filePath = path.resolve(fileName);
                         if(!fs.existsSync(filePath)) {
                             if(isDir)
