@@ -21,7 +21,7 @@ module.exports = {
     },
     createRateLimit: {
         timeInMs: 60 * 1000,
-        maxRequestsPerTime: 30
+        maxRequestsPerTime: 15
     },
     document: {
         dataLimit: "2mb",
