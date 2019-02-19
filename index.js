@@ -13,12 +13,18 @@
             await autoUpdater.installUpdate();
     }
 
+    const documentStorage = config.storage.type === "arangodb" ? require("./storage/arangoStorage") : require("./storage/redisStorage");
+    const {CommandProvider, defaultCommand} = require("./commands/commandProvider");
+
+    const commandProvider = new CommandProvider(defaultCommand);
+    commandProvider.registerCommands((require("./commands/documentCommands")(documentStorage)));
+
     // bodyParser to handle requests in json-format
     app.use(bodyParser.json({limit: config.document.dataLimit, extended: true}));
     app.use(bodyParser.urlencoded({limit: config.document.dataLimit, extended: true}));
 
     // setting route for the rest api
-    app.use("/documents", require("./routes/documents"));
+    app.use("/documents", (require("./routes/documents")(documentStorage)));
     // sending the static files on the root and when the url contains a key
     app.use(serveStatic(__dirname + "/static"));
     app.use("/:key", serveStatic(__dirname + "/static"));

@@ -4,7 +4,7 @@ const router = express.Router();
 const crypto = require("crypto");
 const config = require("../config");
 const keyCreator = require("../storage/keyCreator");
-const documentStorage = config.storage.type === "arangodb" ? require("../storage/arangoStorage") : require("../storage/redisStorage");
+let documentStorage;
 
 // Putting a rateLimit on the creating and deleting of documents to avoid crashes
 const rateLimit = require("express-rate-limit");
@@ -63,7 +63,7 @@ router.get("/delete/:key", rateLimitHandler, async (request, response) => {
     }
 
     const deleteSecretHash = crypto.createHash("sha256").update(deleteSecret).digest("hex");
-    if(await documentStorage.delete(key, deleteSecretHash)) {
+    if(await documentStorage.deleteBySecret(key, deleteSecretHash)) {
         console.log("Deleted document: " + key);
         response.json({message: "Success"});
     } else
@@ -75,4 +75,7 @@ router.get("/", (request, response) => {
     response.send("Route for the PasteServer-API. More info here: https://github.com/realPanamo/PasteServer/blob/master/README.md");
 });
 
-module.exports = router;
+module.exports = storage => {
+    documentStorage = storage;
+    return router;
+};

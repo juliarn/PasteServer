@@ -26,8 +26,10 @@ class AutoUpdater {
                     if(!config.autoUpdate.enabled)
                         console.log("Enable 'autoUpdate' in the config to download it!");
                     resolve(true);
-                } else
+                } else {
+                    console.log("You are up to date!");
                     resolve(false);
+                }
             });
         });
     }
