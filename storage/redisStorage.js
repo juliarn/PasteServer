@@ -45,7 +45,7 @@ class RedisStorage {
         });
     }
 
-    delete(key, deleteSecret) {
+    deleteBySecret(key, deleteSecret) {
         const self = this;
         return new Promise(resolve => {
             self.client.hgetall(key, (error, object) => {
@@ -65,6 +65,28 @@ class RedisStorage {
                 } else
                     resolve(false);
 
+            });
+        });
+    }
+
+    delete(key) {
+        const self = this;
+        return new Promise(resolve => {
+            self.client.exists(key, (error, reply) => {
+               if(error) {
+                   resolve(false);
+                   return;
+               }
+               if(reply === 1) {
+                   self.client.del(key, error => {
+                       if(error) {
+                           resolve(false);
+                           return;
+                       }
+                       resolve(true);
+                   });
+               } else
+                   resolve(false);
             });
         });
     }

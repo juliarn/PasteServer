@@ -26,6 +26,7 @@ class PasteServer {
         this.textArea = document.querySelector("textarea");
         this.textBar = new TextBar(document.querySelector(".textBar"));
 
+        this.textArea.select();
         PasteServer.showElement(this.codeBox, false);
 
         this.currentDocument = new PasteDocument(this);

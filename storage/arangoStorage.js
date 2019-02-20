@@ -52,12 +52,12 @@ class ArangoStorage {
         return null;
     }
 
-    async delete(key, deleteSecret) {
+    async deleteBySecret(key, deleteSecret) {
         if(!await this.collection.documentExists(key))
             return false;
         try {
             const document = await this.collection.document(key);
-            if(document.deleteSecret && document.deleteSecret === deleteSecret) {
+            if(document.deleteSecret === deleteSecret) {
                 await this.collection.remove(key);
                 return true;
             }
@@ -65,6 +65,17 @@ class ArangoStorage {
             console.error("Failed to delete document", error);
         }
         return false;
+    }
+
+    async delete(key) {
+        if(!await this.collection.documentExists(key))
+            return false;
+        try {
+            await this.collection.remove(key);
+            return true;
+        } catch (error) {
+            return false;
+        }
     }
 
 }
