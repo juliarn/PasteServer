@@ -6,11 +6,12 @@ const unzip = require("unzip");
 
 class AutoUpdater {
 
-    constructor() {
+    constructor(currentVersion) {
+        this.currentVersion = currentVersion;
         this.updateFileName = "PasteServer-update.zip";
     }
 
-    checkForUpdates(currentVersion) {
+    checkForUpdates() {
         console.log("Checking for updates ...");
         return new Promise(resolve => {
             request(config.autoUpdate.packageJsonURL, {json: true}, (error, response, body) => {
@@ -21,10 +22,9 @@ class AutoUpdater {
                 }
 
                 const newestVersion = body.version;
-                if(newestVersion !== currentVersion) {
+                if(newestVersion !== this.currentVersion) {
                     console.log(`There's a newer version of the PasteServer available (${newestVersion})!`);
-                    if(!config.autoUpdate.enabled)
-                        console.log("Enable 'autoUpdate' in the config to download it!");
+                    console.log("Execute 'installUpdate' to download it!");
                     resolve(true);
                 } else {
                     console.log("You are up to date!");
@@ -87,4 +87,4 @@ class AutoUpdater {
 
 }
 
-module.exports = new AutoUpdater();
+module.exports = new AutoUpdater(require("./package.json").version);

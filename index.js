@@ -7,17 +7,18 @@
     const config = require("./config");
     const autoUpdater = require("./autoUpdater");
 
-    const updateAvailable = await autoUpdater.checkForUpdates(require("./package.json").version);
+    const updateAvailable = await autoUpdater.checkForUpdates();
     if(updateAvailable && config.autoUpdate.enabled) {
         if(await autoUpdater.downloadUpdate())
             await autoUpdater.installUpdate();
     }
 
     const documentStorage = config.storage.type === "arangodb" ? require("./storage/arangoStorage") : require("./storage/redisStorage");
-    const {CommandProvider, defaultCommand} = require("./commands/commandProvider");
+    const {CommandProvider, defaultCommand} = require("./commands/commands");
 
     const commandProvider = new CommandProvider(defaultCommand);
     commandProvider.registerCommands((require("./commands/documentCommands")(documentStorage)));
+    commandProvider.registerCommands((require("./commands/updateCommands")(autoUpdater)));
 
     // bodyParser to handle requests in json-format
     app.use(bodyParser.json({limit: config.document.dataLimit, extended: true}));

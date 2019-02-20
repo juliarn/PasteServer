@@ -9,6 +9,7 @@ class CommandProvider {
         this.commands = {};
         this.commands[defaultCommand.name] = defaultCommand;
         this.defaultCommand = defaultCommand;
+        this.enabled = true;
 
         consoleReader.on("line", input => this.handleConsoleLine(input));
     }
@@ -17,12 +18,14 @@ class CommandProvider {
         commands.forEach(command => this.commands[command.name.toLowerCase()] = command);
     }
 
-    handleConsoleLine(input) {
+    async handleConsoleLine(input) {
+        if(!this.enabled)
+            return;
         const commandParts = input.trim().split(" ");
         if(commandParts.length > 0) {
             const command = this.commands[commandParts[0].toLowerCase()];
             if(command) {
-                if (command.handler(commandParts.filter((value, index) => index > 0), this) === false)
+                if (await command.handler(commandParts.filter((value, index) => index > 0), this) === false)
                     console.log(`Wrong syntax. Use: ${command.syntax}`)
             } else
                 console.log(`Command not found. Execute '${this.defaultCommand.name}' for a list of all commands`)

@@ -57,7 +57,7 @@ class ArangoStorage {
             return false;
         try {
             const document = await this.collection.document(key);
-            if(document.deleteSecret && document.deleteSecret === deleteSecret) {
+            if(document.deleteSecret === deleteSecret) {
                 await this.collection.remove(key);
                 return true;
             }

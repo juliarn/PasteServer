@@ -70,6 +70,7 @@ class RedisStorage {
     }
 
     delete(key) {
+        const self = this;
         return new Promise(resolve => {
             self.client.exists(key, (error, reply) => {
                if(error) {
