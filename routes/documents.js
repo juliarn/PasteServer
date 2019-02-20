@@ -28,7 +28,7 @@ router.post("/", rateLimitHandler, async (request, response) => {
         const deleteSecretHash = crypto.createHash("sha256").update(deleteSecret).digest("hex");
 
         if(await documentStorage.save(key, deleteSecretHash, text)) {
-            console.log("Created document: " + key);
+            console.log(`Created document: ${key}.`);
             response.status(201).json({key: key, deleteSecret: deleteSecret});
         } else
             response.status(500).json({message: "Failed to save document"});
@@ -46,7 +46,7 @@ router.get("/:key", async (request, response) => {
     if(text == null)
         response.status(404).json({message: "No document found"});
     else {
-        console.log("Sending document: " + key);
+        console.log(`Sending document: ${key}.`);
         response.json({text: text});
     }
 });
@@ -64,7 +64,7 @@ router.get("/delete/:key", rateLimitHandler, async (request, response) => {
 
     const deleteSecretHash = crypto.createHash("sha256").update(deleteSecret).digest("hex");
     if(await documentStorage.deleteBySecret(key, deleteSecretHash)) {
-        console.log("Deleted document: " + key);
+        console.log(`Deleted document: ${key}.`);
         response.json({message: "Success"});
     } else
         response.status(403).json({message: "You entered the wrong secret or the document does not exist"});

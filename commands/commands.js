@@ -26,9 +26,9 @@ class CommandProvider {
             const command = this.commands[commandParts[0].toLowerCase()];
             if(command) {
                 if (await command.handler(commandParts.filter((value, index) => index > 0), this) === false)
-                    console.log(`Wrong syntax. Use: ${command.syntax}`)
+                    console.log(`Wrong syntax, use: ${command.syntax}.`)
             } else
-                console.log(`Command not found. Execute '${this.defaultCommand.name}' for a list of all commands`)
+                console.log(`Command not found. Execute '${this.defaultCommand.name}' for a list of all commands.`)
         }
     }
 
@@ -49,7 +49,7 @@ const helpCommand = new Command("help", "Shows all available commands.", "help",
     const commandMap = provider.commands;
     Object.keys(commandMap).forEach(key => {
         const command = commandMap[key];
-        console.log(`${command.name} | ${command.description}`)
+        console.log(`> ${command.name} | ${command.description}`)
     });
     return true;
 });

@@ -14,7 +14,7 @@ class PasteServer {
         try {
             return JSON.parse(text);
         } catch (error) {
-            console.log("Failed to parse response: " + error.message);
+            console.log(`Failed to parse response: ${error.message}.`);
             return null;
         }
     }
