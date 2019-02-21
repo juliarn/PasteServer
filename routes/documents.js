@@ -71,10 +71,6 @@ router.get("/delete/:key", rateLimitHandler, async (request, response) => {
 
 });
 
-router.get("/", (request, response) => {
-    response.send("Route for the PasteServer-API. More info here: https://github.com/realPanamo/PasteServer/blob/master/README.md");
-});
-
 module.exports = storage => {
     documentStorage = storage;
     return router;
