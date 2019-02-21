@@ -12,11 +12,11 @@ class AutoUpdater {
     }
 
     checkForUpdates() {
-        console.log("Checking for updates ...");
+        console.log("Checking for updates...");
         return new Promise(resolve => {
             request(config.autoUpdate.packageJsonURL, {json: true}, (error, response, body) => {
                 if(error) {
-                    console.error("Error while checking for updates", error);
+                    console.error("Error while checking for updates.", error);
                     resolve(false);
                     return;
                 }
@@ -35,12 +35,12 @@ class AutoUpdater {
     }
 
     downloadUpdate() {
-        console.log("Downloading update ...");
+        console.log("Downloading update...");
         return new Promise(resolve => {
             if(!fs.existsSync(".update"))
                 fs.mkdirSync(".update");
             request(config.autoUpdate.zipURL).on("error", error => {
-                console.error("Error while downloading update", error);
+                console.error("Error while downloading update.", error);
                 resolve(false);
             }).pipe(fs.createWriteStream(path.resolve(".update", this.updateFileName))).on("close", () => {
                 console.log("Successfully downloaded update!");
@@ -50,7 +50,7 @@ class AutoUpdater {
     }
 
     installUpdate() {
-        console.log("Installing update ...");
+        console.log("Installing update...");
         let contentFolderName = "";
         return new Promise(resolve => {
             fs.createReadStream(path.resolve(".update", this.updateFileName))
@@ -68,17 +68,17 @@ class AutoUpdater {
                                 fs.writeFileSync(filePath, "");
                         }
                         if(!isDir) {
-                            console.log("Replacing " + fileName);
+                            console.log(`Replacing ${fileName}.`);
                             entry.pipe(fs.createWriteStream(filePath));
                         }
                     } else
                         entry.autodrain();
                 }).on("error", error => {
-                    console.error("Error while installing update", error);
+                    console.error("Error while installing update.", error);
                     resolve();
                 }).on("close", () => {
                     console.log("Successfully installed update!");
-                    console.log("Stopping the PasteServer for the update to be usable ...")
+                    console.log("Stopping the PasteServer for the update to be usable...")
                     process.exit();
                 });
             fs.removeSync(".update");

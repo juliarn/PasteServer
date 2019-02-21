@@ -14,7 +14,7 @@ class PasteServer {
         try {
             return JSON.parse(text);
         } catch (error) {
-            console.log("Failed to parse response: " + error.message);
+            console.log(`Failed to parse response: ${error.message}.`);
             return null;
         }
     }
@@ -169,7 +169,7 @@ class PasteDocument {
                         window.history.pushState({}, "PasteServer", "/" + key);
                         self.load(key);
                         self.pasteServer.textBar.show("Secret to delete paste: " + response.deleteSecret);
-                    } else if (this.status === 413) {
+                    } else if (this.status === 413 || this.status === 429) {
                         const message = response.message;
                         self.pasteServer.textBar.show("Error while saving: " + message, 3000);
                     } else
@@ -221,7 +221,7 @@ class PasteDocument {
             if(response) {
                 if (this.status === 200)
                     window.location.href = window.location.href.split(self.key)[0];
-                else if (this.status === 403 || this.status === 400) {
+                else if (this.status === 403 || this.status === 400 || this.status === 429) {
                     const message = response.message;
                     self.pasteServer.textBar.show("Failed to delete document: " + message, 3000);
                 } else

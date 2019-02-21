@@ -10,7 +10,7 @@ class RedisStorage {
         });
         if(storageConfig.password)
             this.client.auth(storageConfig.password);
-        this.client.on("error", error => console.log("Redis error occured", error));
+        this.client.on("error", error => console.error("Redis error occured.", error));
         this.expire = storageConfig.documentExpireInMs;
     }
 
@@ -19,7 +19,7 @@ class RedisStorage {
         return new Promise(resolve => {
             self.client.hmset(key, {text: text, deleteSecret: deleteSecret}, error => {
                 if(error) {
-                    console.error("Failed to save document", error);
+                    console.error("Failed to save document.", error);
                     resolve(false);
                 }
                 self.client.expire(key, self.expire);
@@ -33,7 +33,7 @@ class RedisStorage {
         return new Promise(resolve => {
             self.client.hgetall(key, (error, object) => {
                 if(error)
-                    console.error("Failed to load document", error);
+                    console.error("Failed to load document.", error);
 
                 if(!object || !object.text)
                     resolve(null);
@@ -50,14 +50,14 @@ class RedisStorage {
         return new Promise(resolve => {
             self.client.hgetall(key, (error, object) => {
                 if(error)
-                    console.error("Failed to load document", error);
+                    console.error("Failed to load document.", error);
 
                 if(!object || !object.deleteSecret)
                     resolve(false);
                 else if(object.deleteSecret === deleteSecret) {
                     self.client.del(key, error => {
                         if(error) {
-                            console.error("Failed to delete document", error);
+                            console.error("Failed to delete document.", error);
                             resolve(false);
                         }
                         resolve(true);

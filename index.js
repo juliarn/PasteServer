@@ -1,4 +1,6 @@
 (async () => {
+    const launchMillis = Date.now();
+
     const express = require("express");
     const app = express();
 
@@ -7,18 +9,21 @@
     const config = require("./config");
     const autoUpdater = require("./autoUpdater");
 
+    // update-check
     const updateAvailable = await autoUpdater.checkForUpdates();
     if(updateAvailable && config.autoUpdate.enabled) {
         if(await autoUpdater.downloadUpdate())
             await autoUpdater.installUpdate();
     }
 
-    const documentStorage = config.storage.type === "arangodb" ? require("./storage/arangoStorage") : require("./storage/redisStorage");
-    const {CommandProvider, defaultCommand} = require("./commands/commands");
-
-    const commandProvider = new CommandProvider(defaultCommand);
-    commandProvider.registerCommands((require("./commands/documentCommands")(documentStorage)));
-    commandProvider.registerCommands((require("./commands/updateCommands")(autoUpdater)));
+    // connecting to the given database
+    const database = config.storage.type;
+    console.log(`Trying to connect to database '${database}'...`);
+    const documentStorage = database === "arangodb" ? require("./storage/arangoStorage") : require("./storage/redisStorage");
+    if(!documentStorage) {
+        console.log(`There is no support for '${database}'!`);
+        process.exit();
+    }
 
     // bodyParser to handle requests in json-format
     app.use(bodyParser.json({limit: config.document.dataLimit, extended: true}));
@@ -32,8 +37,17 @@
     // else, redirecting to the root
     app.use((request, response) => response.redirect("/"));
 
-    console.log(`Trying to start the server on port ${config.server.port}`);
-    app.listen(config.server.port, console.log(`The server was started successfully on port ${config.server.port}`));
+    console.log(`Trying to bind on port ${config.server.port}...`);
+    app.listen(config.server.port, console.log(`Now listening on port ${config.server.port}.`));
+
+    // commands
+    const {CommandProvider, defaultCommand} = require("./commands/commands");
+
+    const commandProvider = new CommandProvider(defaultCommand);
+    commandProvider.registerCommands((require("./commands/documentCommands")(documentStorage)));
+    commandProvider.registerCommands((require("./commands/updateCommands")(autoUpdater)));
+
+    console.log(`Done (${Date.now() - launchMillis}ms). Execute '${defaultCommand.name}' for a list of all commands.`)
 })();
 
 

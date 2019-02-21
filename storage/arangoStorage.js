@@ -10,7 +10,7 @@ class ArangoStorage {
         database.listDatabases().then(databases => {
             if(databases.indexOf(storageConfig.database) === -1) {
                 database.createDatabase(storageConfig.database).then()
-                    .catch(error => console.error("Failed to create database", error));
+                    .catch(error => console.error("Failed to create database.", error));
             }
         });
 
@@ -19,7 +19,7 @@ class ArangoStorage {
         const collection = database.collection("pasteDocuments");
         collection.exists().then(exists => {
             if(!exists)
-                collection.create().catch(error => console.error("Failed to create collection", error));
+                collection.create().catch(error => console.error("Failed to create collection.", error));
         });
 
         this.collection = collection;
@@ -34,7 +34,7 @@ class ArangoStorage {
                 deleteSecret: deleteSecret
             });
         } catch (error) {
-            console.error("Failed to save document", error);
+            console.error("Failed to save document.", error);
             return false;
         }
         return true;
@@ -47,7 +47,7 @@ class ArangoStorage {
             const document = await this.collection.document(key);
             return document.text;
         } catch (error) {
-            console.error("Failed to load document", error);
+            console.error("Failed to load document.", error);
         }
         return null;
     }
@@ -62,7 +62,7 @@ class ArangoStorage {
                 return true;
             }
         } catch (error) {
-            console.error("Failed to delete document", error);
+            console.error("Failed to delete document.", error);
         }
         return false;
     }
