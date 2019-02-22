@@ -11,10 +11,10 @@ class AutoUpdater {
         this.updateFileName = "PasteServer-update.zip";
     }
 
-    checkForUpdates() {
-        console.log("Checking for updates...");
+    checkForUpdates(dev) {
+        console.log(`Checking for ${dev ? "dev-" : ""}updates...`);
         return new Promise(resolve => {
-            request(config.autoUpdate.packageJsonURL, {json: true}, (error, response, body) => {
+            request(dev ? config.autoUpdate.devPackageJsonURL : config.autoUpdate.packageJsonURL, {json: true}, (error, response, body) => {
                 if(error) {
                     console.error("Error while checking for updates.", error);
                     resolve(false);
@@ -23,8 +23,8 @@ class AutoUpdater {
 
                 const newestVersion = body.version;
                 if(newestVersion !== this.currentVersion) {
-                    console.log(`There's a newer version of the PasteServer available (${newestVersion})!`);
-                    console.log("Execute 'installUpdate' to download it!");
+                    console.log(`There's a newer ${dev ? "dev-" : ""}version of the PasteServer available (${newestVersion})!`);
+                    console.log(`Execute 'installUpdate${dev ? " -dev" : ""}' to download it!`);
                     resolve(true);
                 } else {
                     console.log("You are up to date!");
@@ -34,12 +34,12 @@ class AutoUpdater {
         });
     }
 
-    downloadUpdate() {
-        console.log("Downloading update...");
+    downloadUpdate(dev) {
+        console.log(`Downloading ${dev ? "dev-" : ""}update...`);
         return new Promise(resolve => {
             if(!fs.existsSync(".update"))
                 fs.mkdirSync(".update");
-            request(config.autoUpdate.zipURL).on("error", error => {
+            request(dev ? config.autoUpdate.devZipUrl : config.autoUpdate.zipURL).on("error", error => {
                 console.error("Error while downloading update.", error);
                 resolve(false);
             }).pipe(fs.createWriteStream(path.resolve(".update", this.updateFileName))).on("close", () => {
