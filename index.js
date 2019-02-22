@@ -9,6 +9,8 @@
     const config = require("./config");
     const autoUpdater = require("./autoUpdater");
 
+    console.log(`Starting PasteServer v${autoUpdater.currentVersion}...`);
+
     // update-check
     const updateAvailable = await autoUpdater.checkForUpdates();
     if(updateAvailable && config.autoUpdate.enabled) {

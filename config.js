@@ -6,7 +6,9 @@ module.exports = {
         enabled: false,
         packageJsonURL: "https://raw.githubusercontent.com/realPanamo/PasteServer/master/package.json",
         zipURL: "https://github.com/realPanamo/PasteServer/archive/master.zip",
-        keepFiles: ["config.js"]
+        keepFiles: ["config.js"],
+        devPackageJsonURL: "https://raw.githubusercontent.com/realPanamo/PasteServer/development/package.json",
+        devZipUrl: "https://github.com/realPanamo/PasteServer/archive/development.zip"
     },
     storage: {
         type: "redis",

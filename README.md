@@ -34,6 +34,11 @@ To configure the updating of the server
 * **zipURL**: The URL of the zip-archive with the files in it.
 * **keepFiles**: The files which shouldn't be replaced when installing an update. Works too for files in dirs.
 (use for example: ``static/index.html``).
+* **devPackageJsonURL**: The URL of the package.json file of the remote development pasteServer.
+* **devZipURL**: The URL of the development zip-archive with the files in it.
+
+The last two options are only being used for the ``checkUpdate -dev`` and ``installUpdate -dev`` commands, which are not recommended. 
+The dev-updates contain the newest features, but might have errors and might not be fully completed.
 
 ## Storage-section
 To configure the document-storage
