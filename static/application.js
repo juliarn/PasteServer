@@ -110,15 +110,10 @@ class PasteServer {
     }
 
     updateCodeLines(lineCount, codeLines) {
-        const existingLines = codeLines.children.length / 2;
+        while (codeLines.firstChild)
+            codeLines.removeChild(codeLines.firstChild);
 
-        if(lineCount < existingLines) {
-            for(let i = 0; i < (existingLines - lineCount) * 2; i++)
-                codeLines.removeChild(codeLines.lastChild);
-            return;
-        }
-
-        for(let i = existingLines + 1; i < lineCount; i++) {
+        for(let i = 1; i < lineCount + 1; i++) {
             const lineTextNode = document.createTextNode(i.toString());
             const lineBreakElement = document.createElement("br");
 
