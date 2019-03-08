@@ -93,6 +93,10 @@ If everything succeeded, you'll get the following response:
 * **Status-Code**: 201 Created
 * **Body**: A JSON containing the key ``key`` and ``deleteSecret`` for the key and secret of the document.
 
+If the text is missing, the following:
+
+* **Status-Code**: 400 Bad Request
+
 If the text you want to save is too long, you'll get the following back:
 
 * **Status-Code**: 413 Payload Too Large

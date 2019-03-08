@@ -19,8 +19,13 @@ router.post("/", rateLimitHandler, async (request, response) => {
 
     response.setHeader("Content-Type", "application/json");
 
+    if(!text) {
+        response.status(400).json({message: "You have to enter the text of the paste"});
+        return;
+    }
+
     const maxLength = config.document.maxLength;
-    if(text.length < maxLength) {
+    if(text && text.length < maxLength) {
         const key = keyCreator.create();
 
         const secretChars = "abcdefghijklmnopqrstuvwxyz0123456789!§$%&/()=?{[]}";
