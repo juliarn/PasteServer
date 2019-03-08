@@ -22,7 +22,8 @@ class RedisStorage {
                     console.error("Failed to save document.", error);
                     resolve(false);
                 }
-                self.client.expire(key, self.expire);
+                if(!isStatic)
+                    self.client.expire(key, self.expire);
                 resolve(true);
             });
         });

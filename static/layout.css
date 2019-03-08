@@ -49,7 +49,7 @@ textarea {
 .buttons {
     background-color: #515658;
     border-top: 6px gray solid;
-    padding: 0.4%;
+    padding: 0.4% 0.4% 15px;
     bottom: 0;
     right: 0;
     display: inline-grid;
