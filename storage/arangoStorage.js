@@ -26,12 +26,13 @@ class ArangoStorage {
     }
 
 
-    async save(key, deleteSecret, text) {
+    async save(key, deleteSecret, text, isStatic) {
         try {
             await this.collection.save({
                 _key: key,
                 text: text,
-                deleteSecret: deleteSecret
+                deleteSecret: deleteSecret,
+                isStatic: isStatic
             });
         } catch (error) {
             console.error("Failed to save document.", error);

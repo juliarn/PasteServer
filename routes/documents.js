@@ -27,13 +27,17 @@ router.post("/", rateLimitHandler, async (request, response) => {
         const deleteSecret = keyCreator.create(Math.floor(Math.random() * 16) + 12, secretChars + secretChars.toUpperCase());
         const deleteSecretHash = crypto.createHash("sha256").update(deleteSecret).digest("hex");
 
-        if(await documentStorage.save(key, deleteSecretHash, text)) {
+        if(await documentStorage.save(key, deleteSecretHash, text, false)) {
             console.log(`Created document: ${key}.`);
             response.status(201).json({key: key, deleteSecret: deleteSecret});
         } else
             response.status(500).json({message: "Failed to save document"});
     } else
         response.status(413).json({message: `Text too long (max. ${maxLength})`});
+});
+
+router.get("/", (request, response) => {
+    response.redirect("/");
 });
 
 router.get("/:key", async (request, response) => {

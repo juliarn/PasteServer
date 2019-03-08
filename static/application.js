@@ -20,14 +20,14 @@ class PasteServer {
     }
 
     constructor() {
-        this.codeLines = document.getElementById("codeLines");
         this.codeBox = document.getElementById("codeBox");
+        this.codeBoxLines = this.codeBox.querySelector(".codeLines");
         this.code = this.codeBox.querySelector("code");
+        PasteServer.showElement(this.codeBox, false);
+
         this.textArea = document.querySelector("textarea");
         this.textBar = new TextBar(document.querySelector(".textBar"));
-
         this.textArea.select();
-        PasteServer.showElement(this.codeBox, false);
 
         this.currentDocument = new PasteDocument(this);
 
@@ -109,16 +109,21 @@ class PasteServer {
         document.getElementById("modalDeleteButton").addEventListener("click", () => this.currentDocument.delete(this.deleteSecretInput.value));
     }
 
-    loadCodeLines(lineCount) {
-        while (this.codeLines.firstChild)
-            this.codeLines.removeChild(this.codeLines.firstChild);
+    updateCodeLines(lineCount, codeLines) {
+        const existingLines = codeLines.children.length / 2;
 
-        for(let i = 1; i < lineCount + 1; i++) {
+        if(lineCount < existingLines) {
+            for(let i = 0; i < (existingLines - lineCount) * 2; i++)
+                codeLines.removeChild(codeLines.lastChild);
+            return;
+        }
+
+        for(let i = existingLines + 1; i < lineCount; i++) {
             const lineTextNode = document.createTextNode(i.toString());
             const lineBreakElement = document.createElement("br");
 
-            this.codeLines.appendChild(lineTextNode);
-            this.codeLines.appendChild(lineBreakElement);
+            codeLines.appendChild(lineTextNode);
+            codeLines.appendChild(lineBreakElement);
         }
     }
 }
@@ -194,7 +199,7 @@ class PasteDocument {
 
                     document.title = "PasteServer - " + key;
 
-                    self.pasteServer.loadCodeLines(response.text.split("\n").length);
+                    self.pasteServer.updateCodeLines(response.text.split("\n").length, self.pasteServer.codeBoxLines);
 
                     self.pasteServer.code.innerHTML = hljs.highlightAuto(response.text).value;
                     self.pasteServer.textArea.readOnly = true;

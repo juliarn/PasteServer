@@ -1,4 +1,6 @@
 const {Command} = require("./commands");
+const fs = require("fs");
+const path = require("path");
 let documentStorage;
 
 const deleteDocumentCommand = new Command("deleteDocument", "Deletes a certain document", "deleteDocument <key>", async args => {
@@ -22,7 +24,23 @@ const readDocumentCommand = new Command("readDocument", "Reads a certain documen
     return false;
 });
 
+const createStaticDocumentCommand = new Command("createStaticDocument", "Creates a static document", "createStaticDocument <name> <contentFilePath>", async args => {
+    if(args.length === 2) {
+        const name = args[0];
+        try {
+            const text = fs.readFileSync(path.resolve(args[1]), {encoding: "UTF-8"});
+            if(await documentStorage.save(name, "static", text, true))
+                console.log(`Successfully created static file '${name}'.`)
+        } catch (e) {
+            console.log("Error while reading the file!")
+        }
+        return true;
+    }
+    return false;
+});
+
+
 module.exports = storage => {
     documentStorage = storage;
-    return [deleteDocumentCommand, readDocumentCommand];
+    return [deleteDocumentCommand, readDocumentCommand, createStaticDocumentCommand];
 };

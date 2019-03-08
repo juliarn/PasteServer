@@ -14,10 +14,10 @@ class RedisStorage {
         this.expire = storageConfig.documentExpireInMs;
     }
 
-    save(key, deleteSecret, text) {
+    save(key, deleteSecret, text, isStatic) {
         const self = this;
         return new Promise(resolve => {
-            self.client.hmset(key, {text: text, deleteSecret: deleteSecret}, error => {
+            self.client.hmset(key, {text: text, deleteSecret: deleteSecret, isStatic: isStatic}, error => {
                 if(error) {
                     console.error("Failed to save document.", error);
                     resolve(false);
@@ -38,7 +38,8 @@ class RedisStorage {
                 if(!object || !object.text)
                     resolve(null);
                 else {
-                    self.client.expire(key, self.expire);
+                    if(!object.isStatic)
+                        self.client.expire(key, self.expire);
                     resolve(object.text);
                 }
             });

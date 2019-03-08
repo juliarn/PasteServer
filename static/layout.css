@@ -35,7 +35,7 @@ textarea {
     display: flex;
 }
 
-#codeLines {
+.codeLines {
     font-size: var(--font-size);
     line-height: var(--line-height);
     font-family: var(--font-family);
