@@ -28,7 +28,8 @@ const createStaticDocumentCommand = new Command("createStaticDocument", "Creates
     if(args.length === 2) {
         const name = args[0];
         try {
-            const text = fs.readFileSync(path.resolve(args[1]), {encoding: "UTF-8"});
+            const text = fs.readFileSync(path.resolve(args[1]), {encoding: "utf-8"});
+            console.log(text);
             if(await documentStorage.save(name, "static", text, true))
                 console.log(`Successfully created static file '${name}'.`)
         } catch (e) {
