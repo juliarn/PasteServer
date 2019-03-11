@@ -14,8 +14,19 @@ const rateLimitHandler = rateLimit({
     message: {message: "Request limit reached. Try again later"}
 });
 
-router.post("/", rateLimitHandler, async (request, response) => {
-    const text = request.body.text;
+const rawBodyHandler = (request, response, next) => {
+    request.setEncoding("utf8");
+    let rawBody = "";
+
+    request.on("data", data => rawBody += data);
+    request.on("end", () => {
+        request.rawBody = rawBody;
+        next();
+    }) ;
+};
+
+router.post("/", rateLimitHandler, rawBodyHandler, async (request, response) => {
+    const text = request.rawBody;
 
     response.setHeader("Content-Type", "application/json");
 

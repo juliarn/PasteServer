@@ -81,12 +81,7 @@ to the /documents-route (for example https://paste.dsyn.ga/documents).
 
 ## Create a document
 
-Send a POST-request and as the body, a JSON containing the key ``text`` with the wanted text als value.
-```json
-{
-  "text": "This is a text."
-}
-```
+Send a POST-request and as the body, the text the paste should have as plaintext.
 
 If everything succeeded, you'll get the following response:
 
@@ -105,7 +100,7 @@ If there was an error while saving the document, you'll get this:
 
 * **Status-Code**: 500 Internal Server Error
 
-Both of them contain this:
+The last three all contain this:
 
 * **Body**: A JSON containing the key ```message``` for a short description of the issue while saving.
 

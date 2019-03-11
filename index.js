@@ -28,8 +28,10 @@
     }
 
     // bodyParser to handle requests in json-format
-    app.use(bodyParser.json({limit: config.document.dataLimit, extended: true}));
-    app.use(bodyParser.urlencoded({limit: config.document.dataLimit, extended: true}));
+    const jsonParser = bodyParser.json({limit: config.document.dataLimit, extended: true});
+    app.use((request, response, next) => {
+        request.path.toLowerCase() === "/documents" && request.method === "POST" ? next() : jsonParser(request, response, next);
+    });
 
     // setting route for the rest api
     app.use("/documents", (require("./routes/documents")(documentStorage)));

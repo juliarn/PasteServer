@@ -177,8 +177,8 @@ class PasteDocument {
                 }
             };
             request.open("POST", "/documents", true);
-            request.setRequestHeader("Content-Type", "application/json");
-            request.send(JSON.stringify({text: text}));
+            request.setRequestHeader("Content-Type", "text/plain");
+            request.send(text);
         }
     }
 
