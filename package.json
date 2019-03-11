@@ -1,6 +1,6 @@
 {
   "name": "server",
-  "version": "1.12.2",
+  "version": "1.13.0",
   "description": "PasteServer to upload text or code",
   "repository": "https://github.com/realPanamo/PasteServer",
   "readme": "See README.md",
