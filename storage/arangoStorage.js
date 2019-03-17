@@ -14,7 +14,7 @@ class ArangoStorage {
             }
         });
 
-        database.useDatabase(storageConfig.database)
+        database.useDatabase(storageConfig.database);
 
         const collection = database.collection("pasteDocuments");
         collection.exists().then(exists => {

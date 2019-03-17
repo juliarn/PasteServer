@@ -13,16 +13,17 @@
 
     // update-check
     const updateAvailable = await autoUpdater.checkForUpdates();
-    if(updateAvailable && config.autoUpdate.enabled) {
-        if(await autoUpdater.downloadUpdate())
+    if (updateAvailable && config.autoUpdate.enabled) {
+        if (await autoUpdater.downloadUpdate())
             await autoUpdater.installUpdate();
     }
 
     // connecting to the given database
     const database = config.storage.type;
     console.log(`Trying to connect to database '${database}'...`);
-    const documentStorage = database === "arangodb" ? require("./storage/arangoStorage") : require("./storage/redisStorage");
-    if(!documentStorage) {
+    const documentStorage = database === 'file' ? require("./storage/fileStorage") :
+        database === "arangodb" ? require("./storage/arangoStorage") : require("./storage/redisStorage");
+    if (!documentStorage) {
         console.log(`There is no support for '${database}'!`);
         process.exit();
     }

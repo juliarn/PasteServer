@@ -11,7 +11,7 @@ module.exports = {
         devZipUrl: "https://github.com/realPanamo/PasteServer/archive/development.zip"
     },
     storage: {
-        type: "redis",
+        type: "file",
         host: "127.0.0.1",
         port: 6379,
         password: "",
@@ -19,7 +19,9 @@ module.exports = {
         user: "root",
         database: "pasteServer",
         // only redis
-        documentExpireInMs: 3 * 24 * 60 * 60 * 1000
+        documentExpireInMs: 3 * 24 * 60 * 60 * 1000,
+        // only file
+        path: "data"
     },
     createRateLimit: {
         timeInMs: 60 * 1000,
