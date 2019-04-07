@@ -7,18 +7,6 @@ class PasteServer {
             element.classList.add("invisible");
     }
 
-    static parseResponse(text) {
-        if (text.trim() === "")
-            return null;
-
-        try {
-            return JSON.parse(text);
-        } catch (error) {
-            console.log(`Failed to parse response: ${error.message}.`);
-            return null;
-        }
-    }
-
     constructor() {
         this.codeBox = document.getElementById("codeBox");
         this.codeBoxLines = this.codeBox.querySelector(".codeLines");
@@ -34,33 +22,41 @@ class PasteServer {
         this.setupShortcuts();
         this.setupButtons();
         this.setupModals();
+    }
 
+    async readURL() {
         const url = window.location.href.split("/");
         if(url.length > 3) {
             const key = url[3];
             if(key.trim() !== "")
-                this.currentDocument.load(key);
+                await this.currentDocument.load(key);
         }
     }
 
     setupShortcuts() {
-        document.addEventListener("keydown", keyDownEvent => {
+        document.addEventListener("keydown", async keyDownEvent => {
             if(keyDownEvent.ctrlKey) {
                 switch (keyDownEvent.code) {
                     case "KeyS":
-                        this.currentDocument.save(this.textArea.value);
                         keyDownEvent.preventDefault();
+                        await this.currentDocument.save(this.textArea.value);
                         break;
                     case "KeyN":
+                        keyDownEvent.preventDefault();
                         const url = window.location.href.split("/");
                         if(url.length > 2)
                             window.location.href = "http://" + url[2];
-                        keyDownEvent.preventDefault();
                         break;
                     case "KeyD":
+                        keyDownEvent.preventDefault();
                         if(this.currentDocument.locked)
                             this.deleteModal.open();
-                        keyDownEvent.preventDefault();
+                        break;
+                    case "KeyC":
+                        if(keyDownEvent.altKey) {
+                            keyDownEvent.preventDefault();
+                            this.copyToClipboard();
+                        }
                         break;
                 }
             }
@@ -68,23 +64,8 @@ class PasteServer {
     }
 
     setupButtons() {
-        document.getElementById("saveButton").addEventListener("click", () => this.currentDocument.save(this.textArea.value));
-        document.getElementById("copyButton").addEventListener("click", () => {
-            if (this.currentDocument.locked) {
-                if (document.selection) {
-                    const range = document.body.createTextRange();
-                    range.moveToElementText(this.code);
-                    range.select();
-                } else if (window.getSelection) {
-                    const range = document.createRange();
-                    range.selectNode(this.code);
-                    window.getSelection().removeAllRanges();
-                    window.getSelection().addRange(range);
-                }
-            } else
-                this.textArea.select();
-            document.execCommand("copy");
-        });
+        document.getElementById("saveButton").addEventListener("click", async () =>  await this.currentDocument.save(this.textArea.value));
+        document.getElementById("copyButton").addEventListener("click", () => this.copyToClipboard());
         document.getElementById("newDocButton").addEventListener("click", () => {
             const url = window.location.href.split("/");
             if(url.length > 2)
@@ -94,22 +75,43 @@ class PasteServer {
             if(this.currentDocument.locked)
                 this.deleteModal.open();
         });
-
     }
 
     setupModals() {
-        M.Modal.init(document.querySelectorAll(".modal"), {
-            onCloseEnd: () => {
-                this.deleteSecretInput.value = "";
-                this.deleteSecretInput.nextElementSibling.classList.remove("active");
-            }
-        });
+        M.Modal.init(document.querySelectorAll(".modal"), {});
+
         this.deleteModal = M.Modal.getInstance(document.getElementById("deleteModal"));
+        this.deleteModal.options.onCloseEnd = () => {
+            this.deleteSecretInput.value = "";
+            this.deleteSecretInput.nextElementSibling.classList.remove("active");
+        };
+
         this.deleteSecretInput = document.getElementById("deleteSecretInput");
-        document.getElementById("modalDeleteButton").addEventListener("click", () => this.currentDocument.delete(this.deleteSecretInput.value));
+        document.getElementById("modalDeleteButton").addEventListener("click",
+            async () => await this.currentDocument.delete(this.deleteSecretInput.value));
     }
 
-    updateCodeLines(lineCount, codeLines) {
+    copyToClipboard() {
+        if (this.currentDocument.locked) {
+            if (document.selection) {
+                const range = document.body.createTextRange();
+                range.moveToElementText(this.code);
+                range.select();
+            } else if (window.getSelection) {
+                const range = document.createRange();
+                range.selectNode(this.code);
+                window.getSelection().removeAllRanges();
+                window.getSelection().addRange(range);
+            }
+        } else
+            this.textArea.select();
+
+        document.execCommand("copy");
+    }
+
+    updateCodeLines(lineCount) {
+        const codeLines = this.codeBoxLines;
+
         while (codeLines.firstChild)
             codeLines.removeChild(codeLines.firstChild);
 
@@ -121,6 +123,7 @@ class PasteServer {
             codeLines.appendChild(lineBreakElement);
         }
     }
+
 }
 
 class TextBar {
@@ -154,86 +157,92 @@ class PasteDocument {
         this.key = null;
     }
 
-    save(text) {
+    async save(text) {
         if(text.trim() === "")
             return;
 
         if(!this.locked) {
-            const request = new XMLHttpRequest();
-            const self = this;
-            request.onreadystatechange = function() {
-                const response = PasteServer.parseResponse(this.responseText);
-                if(response) {
-                    if (this.status === 201) {
-                        const key = response.key;
-                        window.history.pushState({}, "PasteServer", "/" + key);
-                        self.load(key);
-                        self.pasteServer.textBar.show("Secret to delete paste: " + response.deleteSecret);
-                    } else if (this.status === 413 || this.status === 429 || this.status === 400) {
-                        const message = response.message;
-                        self.pasteServer.textBar.show("Error while saving: " + message, 3000);
-                    } else
-                        self.pasteServer.textBar.show("Unexpected error occurred while saving", 3000);
-                }
-            };
-            request.open("POST", "/documents", true);
-            request.setRequestHeader("Content-Type", "text/plain");
-            request.send(text);
+            try {
+                const response =  await fetch("/documents", {
+                    method: "POST",
+                    headers: {"Content-Type": "application/json"},
+                    body: text
+                });
+
+                const json = await response.json();
+                if(response.ok) {
+                    const key = json.key;
+
+                    window.history.pushState({}, "PasteServer", "/" + key);
+                    await this.load(key);
+
+                    this.pasteServer.textBar.show("Secret to delete paste: " + json.deleteSecret);
+                } else if(json.message) {
+                    const message = json.message;
+                    this.pasteServer.textBar.show("Error while saving: " + message, 3000);
+                } else
+                    this.pasteServer.textBar.show("Unexpected error occurred while saving", 3000);
+
+            } catch (error) {
+                console.error("Error while saving document: ", error);
+            }
         }
     }
 
-    load(key) {
-        const request = new XMLHttpRequest();
-        const self = this;
-        request.onreadystatechange = function() {
-            const response = PasteServer.parseResponse(this.responseText);
-            if(response) {
-                if (this.status === 200) {
-                    PasteServer.showElement(self.pasteServer.codeBox, true);
-                    PasteServer.showElement(self.pasteServer.textArea, false);
+    async load(key) {
+        try {
+            const response = await fetch("/documents/" + key, {method: "GET"});
 
-                    document.title = "PasteServer - " + key;
+            if (response.ok) {
+                const documentText = (await response.json()).text;
 
-                    self.pasteServer.updateCodeLines(response.text.split("\n").length, self.pasteServer.codeBoxLines);
+                PasteServer.showElement(this.pasteServer.codeBox, true);
+                PasteServer.showElement(this.pasteServer.textArea, false);
 
-                    self.pasteServer.code.innerHTML = hljs.highlightAuto(response.text).value;
-                    self.pasteServer.textArea.readOnly = true;
-                    self.locked = true;
+                document.title = "PasteServer - " + key;
 
-                    self.key = key;
-                } else
-                    window.location.href = window.location.href.split(key)[0];
-            }
-        };
+                this.pasteServer.updateCodeLines(documentText.split("\n").length);
 
-        request.open("GET", "/documents/" + key, true);
-        request.send();
+                this.pasteServer.code.innerHTML = hljs.highlightAuto(documentText).value;
+                this.pasteServer.textArea.readOnly = true;
+                this.locked = true;
+
+                this.key = key;
+            } else
+                window.location.href = window.location.href.split(key)[0];
+
+        } catch (error) {
+            console.error("Error while loading document: ", error)
+        }
     }
 
-    delete(secret) {
+    async delete(secret) {
         if(!this.key || !this.locked)
             return;
 
-        const request = new XMLHttpRequest();
-        const self = this;
-        request.onreadystatechange = function() {
-            const response = PasteServer.parseResponse(this.responseText);
-            if(response) {
-                if (this.status === 200)
-                    window.location.href = window.location.href.split(self.key)[0];
-                else if (this.status === 403 || this.status === 400 || this.status === 429) {
-                    const message = response.message;
-                    self.pasteServer.textBar.show("Failed to delete document: " + message, 3000);
-                } else
-                    self.pasteServer.textBar.show("Unexpected error occurred while deleting", 3000);
-            }
-        };
+        try {
+            const response = await fetch("/documents/delete/" + this.key, {
+                method: "GET",
+                headers: {"deleteSecret": secret}
+            });
 
-        request.open("GET", "/documents/delete/" + this.key, true);
-        request.setRequestHeader("deleteSecret", secret);
-        request.send();
+            const json = await response.json();
+            if (response.ok)
+                window.location.href = window.location.href.split(self.key)[0];
+            else if (json.message) {
+                const message = json.message;
+                this.pasteServer.textBar.show("Failed to delete document: " + message, 3000);
+            } else
+                this.pasteServer.textBar.show("Unexpected error occurred while deleting", 3000);
+
+        } catch (error) {
+            console.error("Error while deleting document: ", error)
+        }
     }
+
 }
 
-document.addEventListener("DOMContentLoaded", () => new PasteServer());
-
+document.addEventListener("DOMContentLoaded", async () => {
+    const pasteServer = new PasteServer();
+    await pasteServer.readURL();
+});

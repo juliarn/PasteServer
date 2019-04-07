@@ -39,8 +39,7 @@ router.post("/", rateLimitHandler, rawBodyHandler, async (request, response) => 
     if(text && text.length < maxLength) {
         const key = keyCreator.create();
 
-        const secretChars = "abcdefghijklmnopqrstuvwxyz0123456789!§$%&/()=?{[]}";
-        const deleteSecret = keyCreator.create(Math.floor(Math.random() * 16) + 12, secretChars + secretChars.toUpperCase());
+        const deleteSecret = keyCreator.create(Math.floor(Math.random() * 16) + 12);
         const deleteSecretHash = crypto.createHash("sha256").update(deleteSecret).digest("hex");
 
         if(await documentStorage.save(key, deleteSecretHash, text, false)) {
