@@ -30,9 +30,9 @@ class ArangoStorage {
         try {
             await this.collection.save({
                 _key: key,
-                text: text,
-                deleteSecret: deleteSecret,
-                isStatic: isStatic
+                deleteSecret,
+                text,
+                isStatic
             });
         } catch (error) {
             console.error("Failed to save document.", error);
@@ -80,6 +80,5 @@ class ArangoStorage {
     }
 
 }
-
 
 module.exports = new ArangoStorage(config.storage);

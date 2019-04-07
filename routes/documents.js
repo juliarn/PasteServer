@@ -3,7 +3,7 @@ const router = express.Router();
 
 const crypto = require("crypto");
 const config = require("../config");
-const keyCreator = require("../storage/keyCreator");
+const keyCreator = require("../storage/key/keyCreator");
 let documentStorage;
 
 // Putting a rateLimit on the creating and deleting of documents to avoid crashes
@@ -22,7 +22,7 @@ const rawBodyHandler = (request, response, next) => {
     request.on("end", () => {
         request.rawBody = rawBody;
         next();
-    }) ;
+    });
 };
 
 router.post("/", rateLimitHandler, rawBodyHandler, async (request, response) => {

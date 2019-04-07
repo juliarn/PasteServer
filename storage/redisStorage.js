@@ -17,7 +17,11 @@ class RedisStorage {
     save(key, deleteSecret, text, isStatic) {
         const self = this;
         return new Promise(resolve => {
-            self.client.hmset(key, {text: text, deleteSecret: deleteSecret, isStatic: isStatic}, error => {
+            self.client.hmset(key, {
+                deleteSecret,
+                text,
+                isStatic
+            }, error => {
                 if(error) {
                     console.error("Failed to save document.", error);
                     resolve(false);

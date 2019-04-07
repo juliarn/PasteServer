@@ -22,4 +22,4 @@ class KeyCreator {
 
 }
 
-module.exports = new KeyCreator(require("../config").keyGenerator);
+module.exports = new KeyCreator(require("../../config").keyGenerator);

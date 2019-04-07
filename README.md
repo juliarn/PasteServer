@@ -4,7 +4,7 @@ Demo: https://paste.dsyn.ga
 
 # Usage
 To use the server, just download this repo and install [Node.js](http://www.nodejs.org/) and [Redis](http://www.redis.io/) or
-[ArangoDB](http://www.arangodb.com/) for the document-storage.
+[ArangoDB](http://www.arangodb.com/) for the document-storage. If you don't want to use one of these options, the server also supports a file-storage.
 Now you can edit the ``config.js`` the way you want to. 
 
 After you did that, you have to install the dependencies the server needs. Just execute this:
@@ -43,7 +43,7 @@ The dev-updates contain the newest features, but might have errors and might not
 ## Storage-section
 To configure the document-storage
 
-*  **type**: The type of the storage. ("redis" or "arangodb")
+*  **type**: The type of the storage. ("file", "redis" or "arangodb")
 *  **host**: The Host of the storage-type.
 *  **port**: The Port of the storage-type.
 *  **password**: The Password of the storage-type.
@@ -52,6 +52,8 @@ To configure the document-storage
 *  **database**: The database to store the documents in. (only ArangoDB)
 
 *  **documentExpireInMs**: The time in milliseconds after a document will be deleted when unused. (only Redis)
+
+*  **path**: The path of the folder the document-files should be saved in. (only file-storage)
 
 ## RateLimit-section
 To configure the rateLimits of creating and deleting documents
