@@ -21,7 +21,7 @@
     // connecting to the given database
     const database = config.storage.type;
     console.log(`Trying to connect to database '${database}'...`);
-    const documentStorage = database === 'file' ? require("./storage/fileStorage") :
+    const documentStorage = database === "file" ? require("./storage/fileStorage") :
         database === "arangodb" ? require("./storage/arangoStorage") : require("./storage/redisStorage");
     if (!documentStorage) {
         console.log(`There is no support for '${database}'!`);
@@ -30,9 +30,8 @@
 
     // bodyParser to handle requests in json-format
     const jsonParser = bodyParser.json({limit: config.document.dataLimit, extended: true});
-    app.use((request, response, next) => {
-        request.path.toLowerCase() === "/documents" && request.method === "POST" ? next() : jsonParser(request, response, next);
-    });
+    app.use((request, response, next) =>
+        request.path.toLowerCase() === "/documents" && request.method === "POST" ? next() : jsonParser(request, response, next));
 
     // setting route for the rest api
     app.use("/documents", (require("./routes/documents")(documentStorage)));

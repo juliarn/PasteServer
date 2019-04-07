@@ -1,33 +1,32 @@
 const config = require("../config");
-const fs = require('fs');
+const fs = require("fs");
 
 class FileStorage {
 
     constructor(storageConfig) {
         this.path = storageConfig.path;
         if (!fs.existsSync(this.path)) {
-            fs.mkdir(this.path, (err) => {
-                if (err) {
-                    console.error('Failed to mkdir folder.', err);
-                }
-            })
+            fs.mkdir(this.path, error => {
+                if (error)
+                    console.error("Failed to mkdir folder.", error);
+            });
         }
     }
 
     save(key, deleteSecret, text, isStatic) {
         const self = this;
         return new Promise(resolve => {
-            fs.writeFile(self.path + '/' + key,
+            fs.writeFile(self.path + "/" + key,
                 JSON.stringify({
-                    key: key,
-                    deleteSecret: deleteSecret,
-                    text: text,
-                    isStatic: isStatic
-                }), (err) => {
-                    if (err) {
-                        console.error('Failed to save document.', err);
+                    deleteSecret,
+                    text,
+                    isStatic
+                }), error => {
+                    if (error) {
+                        console.error("Failed to save document.", error);
                         resolve(false);
-                    } else resolve(true);
+                    } else
+                        resolve(true);
                 }
             );
         });
@@ -36,74 +35,61 @@ class FileStorage {
     load(key) {
         const self = this;
         return new Promise(resolve => {
-            const documentPath = self.path + '/' + key;
+            const documentPath = self.path + "/" + key;
             if (fs.existsSync(documentPath)) {
-                fs.readFile(documentPath, (err, data) => {
-                    if (err) {
-                        console.error('Failed to load document', err);
+                fs.readFile(documentPath, (error, data) => {
+                    if (error) {
+                        console.error("Failed to load document.", error);
                         resolve(null);
-                    } else {
-                        resolve(JSON.parse(data).text);
-                    }
+                    } else
+                        resolve(JSON.parse(data.toString("utf8")).text);
                 });
-            } else {
+            } else
                 resolve(null);
-            }
         });
     }
 
     deleteBySecret(key, deleteSecret) {
         const self = this;
         return new Promise(resolve => {
-            const documentPath = self.path + '/' + key;
+            const documentPath = self.path + "/" + key;
             if (fs.existsSync(documentPath)) {
-                fs.readFile(documentPath, (err, data) => {
-                    if (err) {
-                        console.error('Failed to load document', err);
+                fs.readFile(documentPath, (error, data) => {
+                    if (error) {
+                        console.error("Failed to load document.", error);
                         resolve(false);
                     } else {
-                        const document = JSON.parse(data);
+                        const document = JSON.parse(data.toString("utf8"));
                         if (document.deleteSecret === deleteSecret) {
-                            fs.unlink(documentPath, err1 => {
-                                if (err1) {
-                                    console.error('Failed to delete document', err1);
+                            fs.unlink(documentPath, unlinkError => {
+                                if (unlinkError) {
+                                    console.error("Failed to delete document.", unlinkError);
                                     resolve(false);
-                                } else {
+                                } else
                                     resolve(true);
-                                }
-                            })
+                            });
                         }
                     }
                 });
-            } else {
+            } else
                 resolve(false);
-            }
         });
     }
 
     delete(key) {
         const self = this;
         return new Promise(resolve => {
-            const documentPath = self.path + '/' + key;
+            const documentPath = self.path + "/" + key;
             if (fs.existsSync(documentPath)) {
-                fs.readFile(documentPath, (err) => {
-                    if (err) {
-                        console.error('Failed to load document', err);
+                fs.unlink(documentPath, unlinkError => {
+                    if (unlinkError) {
+                        console.error("Failed to delete document.", unlinkError);
                         resolve(false);
-                    } else {
-                        fs.unlink(documentPath, err1 => {
-                            if (err1) {
-                                console.error('Failed to delete document', err1);
-                                resolve(false);
-                            } else {
-                                resolve(true);
-                            }
-                        })
-                    }
+                    } else
+                        resolve(true);
                 });
-            } else {
+            } else
                 resolve(false);
-            }
         });
     }
 
