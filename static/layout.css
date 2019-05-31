@@ -46,19 +46,58 @@ textarea {
     padding-right: 30px;
 }
 
-.buttons {
+.side-panel {
     background-color: #515658;
-    border-top: 6px gray solid;
-    padding: 0.4% 0.4% 15px;
     bottom: 0;
     right: 0;
-    display: inline-grid;
     position: fixed;
+    padding: 8px;
+    -webkit-animation-name: "slide-in";
+    -moz-animation-name: "slide-in";
+    -o-animation-name: "slide-in";
+    animation-name: "slide-in";
+    animation-duration: 0.8s;
+    animation-fill-mode: forwards;
+}
+
+.collapse-button {
+    margin: -8px -8px 8px;
+    height: 10px;
+    background-color: gray;
+}
+
+.buttons {
+    display: inline-grid;
     text-align: center;
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+}
+
+.collapsed {
+    -webkit-animation-name: "slide-out";
+    -moz-animation-name: "slide-out";
+    -o-animation-name: "slide-out";
+    animation-name: "slide-out";
+    animation-duration: 0.8s;
+    animation-fill-mode: forwards;
+}
+
+@keyframes slide-in {
+    from {
+        -webkit-transform: translateY(95%);
+        -ms-transform: translateY(95%);
+        transform: translateY(95%);
+    }
+}
+
+@keyframes slide-out {
+    to {
+        -webkit-transform: translateY(95%);
+        -ms-transform: translateY(95%);
+        transform: translateY(95%);
+    }
 }
 
 .buttons > p {

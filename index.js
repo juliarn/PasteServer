@@ -20,7 +20,7 @@
 
     // connecting to the given database
     const database = config.storage.type;
-    console.log(`Trying to connect to database '${database}'...`);
+    console.log(`Trying to use database '${database}'...`);
     const documentStorage = database === "file" ? require("./storage/fileStorage") :
         database === "arangodb" ? require("./storage/arangoStorage") : require("./storage/redisStorage");
     if (!documentStorage) {

@@ -1,5 +1,6 @@
 const config = require("../config");
 const fs = require("fs");
+const crypto = require("crypto");
 
 class FileStorage {
 
@@ -13,7 +14,13 @@ class FileStorage {
         }
     }
 
+    hashKey(key) {
+        return crypto.createHash("sha256").update(key).digest("hex")
+    }
+
     save(key, deleteSecret, text, isStatic) {
+        key = this.hashKey(key);
+
         const self = this;
         return new Promise(resolve => {
             fs.writeFile(self.path + "/" + key,
@@ -33,6 +40,8 @@ class FileStorage {
     }
 
     load(key) {
+        key = this.hashKey(key);
+
         const self = this;
         return new Promise(resolve => {
             const documentPath = self.path + "/" + key;
@@ -41,8 +50,14 @@ class FileStorage {
                     if (error) {
                         console.error("Failed to load document.", error);
                         resolve(null);
-                    } else
-                        resolve(JSON.parse(data.toString("utf8")).text);
+                    } else {
+                        try {
+                            resolve(JSON.parse(data.toString("utf8")).text);
+                        } catch (error) {
+                            console.error("Failed to load document.", error);
+                            resolve(null);
+                        }
+                    }
                 });
             } else
                 resolve(null);
@@ -50,6 +65,8 @@ class FileStorage {
     }
 
     deleteBySecret(key, deleteSecret) {
+        key = this.hashKey(key);
+
         const self = this;
         return new Promise(resolve => {
             const documentPath = self.path + "/" + key;
@@ -59,15 +76,20 @@ class FileStorage {
                         console.error("Failed to load document.", error);
                         resolve(false);
                     } else {
-                        const document = JSON.parse(data.toString("utf8"));
-                        if (document.deleteSecret === deleteSecret) {
-                            fs.unlink(documentPath, unlinkError => {
-                                if (unlinkError) {
-                                    console.error("Failed to delete document.", unlinkError);
-                                    resolve(false);
-                                } else
-                                    resolve(true);
-                            });
+                        try {
+                            const document = JSON.parse(data.toString("utf8"));
+                            if (document.deleteSecret === deleteSecret) {
+                                fs.unlink(documentPath, unlinkError => {
+                                    if (unlinkError) {
+                                        console.error("Failed to delete document.", unlinkError);
+                                        resolve(false);
+                                    } else
+                                        resolve(true);
+                                });
+                            }
+                        } catch (error) {
+                            console.error("Failed to delete document.", error);
+                            resolve(false);
                         }
                     }
                 });
@@ -77,6 +99,8 @@ class FileStorage {
     }
 
     delete(key) {
+        key = this.hashKey(key);
+
         const self = this;
         return new Promise(resolve => {
             const documentPath = self.path + "/" + key;
