@@ -75,6 +75,14 @@ class PasteServer {
             if(this.currentDocument.locked)
                 this.deleteModal.open();
         });
+
+        const sidePanel = document.querySelector(".side-panel");
+        document.querySelector(".collapse-button").addEventListener("click", () => {
+            if(!sidePanel.classList.contains("collapsed"))
+                sidePanel.classList.add("collapsed");
+            else
+                sidePanel.classList.remove("collapsed")
+        });
     }
 
     setupModals() {

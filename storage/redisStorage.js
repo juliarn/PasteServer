@@ -40,13 +40,12 @@ class RedisStorage {
                 if(error)
                     console.error("Failed to load document.", error);
 
-                if(!object || !object.text)
-                    resolve(null);
-                else {
+                if(object && object.text) {
                     if(!object.isStatic)
                         self.client.expire(key, self.expire);
                     resolve(object.text);
-                }
+                } else
+                    resolve(null)
             });
         });
     }
@@ -78,12 +77,12 @@ class RedisStorage {
     delete(key) {
         const self = this;
         return new Promise(resolve => {
-            self.client.exists(key, (error, reply) => {
+            self.client.exists(key, (error, response) => {
                if(error) {
                    resolve(false);
                    return;
                }
-               if(reply === 1) {
+               if(response === 1) {
                    self.client.del(key, error => {
                        if(error) {
                            resolve(false);

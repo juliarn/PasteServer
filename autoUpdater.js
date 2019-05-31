@@ -2,7 +2,7 @@ const config = require("./config");
 const request = require("request");
 const fs = require("fs-extra");
 const path = require("path");
-const unzip = require("unzip");
+const unzipper = require("unzipper");
 
 class AutoUpdater {
 
@@ -54,7 +54,7 @@ class AutoUpdater {
         let contentFolderName = "";
         return new Promise(resolve => {
             fs.createReadStream(path.resolve(".update", this.updateFileName))
-                .pipe(unzip.Parse()).on("entry", entry => {
+                .pipe(unzipper.Parse()).on("entry", entry => {
                     const isDir = entry.type === "Directory";
                     if(!contentFolderName && isDir)
                         contentFolderName = entry.path;
@@ -78,7 +78,7 @@ class AutoUpdater {
                     resolve();
                 }).on("close", () => {
                     console.log("Successfully installed update!");
-                    console.log("Stopping the PasteServer for the update to be usable...")
+                    console.log("Stopping the PasteServer for the update to be usable...");
                     process.exit();
                 });
             fs.removeSync(".update");
