@@ -1,6 +1,6 @@
 # PasteServer
 PasteServer to upload text or code.
-Demo: https://paste.dsyn.ga
+Demo: https://paste.derrop.gq
 
 # Usage
 To use the server, just download this repo and install [Node.js](http://www.nodejs.org/) and [Redis](http://www.redis.io/) or
