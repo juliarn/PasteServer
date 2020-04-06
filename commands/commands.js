@@ -19,12 +19,12 @@ class CommandProvider {
     }
 
     async handleConsoleLine(input) {
-        if(!this.enabled)
+        if (!this.enabled)
             return;
         const commandParts = input.trim().split(" ");
-        if(commandParts.length > 0) {
+        if (commandParts.length > 0) {
             const command = this.commands[commandParts[0].toLowerCase()];
-            if(command) {
+            if (command) {
                 if (await command.handler(commandParts.filter((value, index) => index > 0), this) === false)
                     console.log(`Wrong syntax, use: ${command.syntax}.`)
             } else
@@ -45,7 +45,7 @@ class Command {
 
 }
 
-const helpCommand = new Command("help", "Shows all available commands.", "help",(args, provider) => {
+const helpCommand = new Command("help", "Shows all available commands.", "help", (args, provider) => {
     const commandMap = provider.commands;
     Object.keys(commandMap).forEach(key => {
         const command = commandMap[key];

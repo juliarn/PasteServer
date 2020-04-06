@@ -4,11 +4,11 @@ module.exports = {
     },
     autoUpdate: {
         enabled: false,
-        packageJsonURL: "https://raw.githubusercontent.com/realPanamo/PasteServer/master/package.json",
-        zipURL: "https://github.com/realPanamo/PasteServer/archive/master.zip",
+        packageJsonURL: "https://raw.githubusercontent.com/juliarn/PasteServer/master/package.json",
+        zipURL: "https://github.com/juliarn/PasteServer/archive/master.zip",
         keepFiles: [],
-        devPackageJsonURL: "https://raw.githubusercontent.com/realPanamo/PasteServer/development/package.json",
-        devZipUrl: "https://github.com/realPanamo/PasteServer/archive/development.zip"
+        devPackageJsonURL: "https://raw.githubusercontent.com/juliarn/PasteServer/development/package.json",
+        devZipUrl: "https://github.com/juliarn/PasteServer/archive/development.zip"
     },
     storage: {
         type: "file",

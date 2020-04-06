@@ -1,14 +1,14 @@
 {
   "name": "pasteserver",
-  "version": "1.15.1",
+  "version": "1.15.2",
   "description": "PasteServer to upload text or code",
-  "repository": "https://github.com/realPanamo/PasteServer",
-  "readme": "See README.md",
+  "repository": "https://github.com/juliarn/PasteServer",
+  "readme": "README.md",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
   },
-  "author": "Panamo",
+  "author": "juliarn",
   "license": "MIT",
   "dependencies": {
     "arangojs": "^6.10.0",
@@ -16,9 +16,9 @@
     "express": "^4.16.4",
     "express-rate-limit": "^3.3.2",
     "fs-extra": "latest",
-    "redis": "^2.8.0",
+    "redis": "^3.0.2",
     "request": "latest",
     "serve-static": "^1.13.2",
-    "unzipper": "^0.9.15"
+    "unzipper": "^0.10.10"
   }
 }

@@ -2,7 +2,7 @@ class KeyCreator {
 
     constructor(keyGeneratorConfig) {
         this.chars = keyGeneratorConfig.keyChars;
-        if(keyGeneratorConfig.withToUpperCase)
+        if (keyGeneratorConfig.withToUpperCase)
             this.chars += this.chars.toUpperCase();
         this.keyLength = keyGeneratorConfig.keyLength;
     }
@@ -12,7 +12,7 @@ class KeyCreator {
         const keyChars = chars || this.chars;
         let key = "";
 
-        for(let i = 0; i < length; i++) {
+        for (let i = 0; i < length; i++) {
             const random = Math.floor(Math.random() * keyChars.length);
             key += keyChars[random];
         }
