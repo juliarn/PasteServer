@@ -11,13 +11,13 @@ class RedisStorage {
         if(storageConfig.password)
             this.client.auth(storageConfig.password);
         this.client.on("error", error => console.error("Redis error occured.", error));
-        this.expire = storageConfig.documentExpireInMs;
+        this.expire = storageConfig.documentExpireInMs / 1000;
     }
 
     save(key, deleteSecret, text, isStatic) {
         const self = this;
         return new Promise(resolve => {
-            self.client.hmset(key, {
+            self.client.hset(key, {
                 deleteSecret,
                 text,
                 isStatic
