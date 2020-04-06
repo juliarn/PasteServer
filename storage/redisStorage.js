@@ -17,7 +17,7 @@ class RedisStorage {
     save(key, deleteSecret, text, isStatic) {
         const self = this;
         return new Promise(resolve => {
-            self.client.hset(key, {
+            self.client.hmset(key, {
                 deleteSecret,
                 text,
                 isStatic

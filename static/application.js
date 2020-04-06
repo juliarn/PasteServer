@@ -1,7 +1,7 @@
 class PasteServer {
 
     static showElement(element, show) {
-        if(show)
+        if (show)
             element.classList.remove("invisible");
         else
             element.classList.add("invisible");
@@ -26,16 +26,16 @@ class PasteServer {
 
     async readURL() {
         const url = window.location.href.split("/");
-        if(url.length > 3) {
+        if (url.length > 3) {
             const key = url[3];
-            if(key.trim() !== "")
+            if (key.trim() !== "")
                 await this.currentDocument.load(key);
         }
     }
 
     setupShortcuts() {
         document.addEventListener("keydown", async keyDownEvent => {
-            if(keyDownEvent.ctrlKey) {
+            if (keyDownEvent.ctrlKey) {
                 switch (keyDownEvent.code) {
                     case "KeyS":
                         keyDownEvent.preventDefault();
@@ -44,16 +44,16 @@ class PasteServer {
                     case "KeyN":
                         keyDownEvent.preventDefault();
                         const url = window.location.href.split("/");
-                        if(url.length > 2)
+                        if (url.length > 2)
                             window.location.href = "http://" + url[2];
                         break;
                     case "KeyD":
                         keyDownEvent.preventDefault();
-                        if(this.currentDocument.locked)
+                        if (this.currentDocument.locked)
                             this.deleteModal.open();
                         break;
                     case "KeyC":
-                        if(keyDownEvent.altKey) {
+                        if (keyDownEvent.altKey) {
                             keyDownEvent.preventDefault();
                             this.copyToClipboard();
                         }
@@ -64,21 +64,21 @@ class PasteServer {
     }
 
     setupButtons() {
-        document.getElementById("saveButton").addEventListener("click", async () =>  await this.currentDocument.save(this.textArea.value));
+        document.getElementById("saveButton").addEventListener("click", async () => await this.currentDocument.save(this.textArea.value));
         document.getElementById("copyButton").addEventListener("click", () => this.copyToClipboard());
         document.getElementById("newDocButton").addEventListener("click", () => {
             const url = window.location.href.split("/");
-            if(url.length > 2)
+            if (url.length > 2)
                 window.location.href = "http://" + url[2];
         });
         document.getElementById("deleteButton").addEventListener("click", () => {
-            if(this.currentDocument.locked)
+            if (this.currentDocument.locked)
                 this.deleteModal.open();
         });
 
         const sidePanel = document.querySelector(".side-panel");
         document.querySelector(".collapse-button").addEventListener("click", () => {
-            if(!sidePanel.classList.contains("collapsed"))
+            if (!sidePanel.classList.contains("collapsed"))
                 sidePanel.classList.add("collapsed");
             else
                 sidePanel.classList.remove("collapsed")
@@ -123,7 +123,7 @@ class PasteServer {
         while (codeLines.firstChild)
             codeLines.removeChild(codeLines.firstChild);
 
-        for(let i = 1; i < lineCount + 1; i++) {
+        for (let i = 1; i < lineCount + 1; i++) {
             const lineTextNode = document.createTextNode(i.toString());
             const lineBreakElement = document.createElement("br");
 
@@ -146,7 +146,7 @@ class TextBar {
         this.textBarText.innerText = text;
         this.textBarElement.classList.add("show");
 
-        if(time)
+        if (time)
             setTimeout(() => this.hide(), time);
     }
 
@@ -166,26 +166,26 @@ class PasteDocument {
     }
 
     async save(text) {
-        if(text.trim() === "")
+        if (text.trim() === "")
             return;
 
-        if(!this.locked) {
+        if (!this.locked) {
             try {
-                const response =  await fetch("/documents", {
+                const response = await fetch("/documents", {
                     method: "POST",
                     headers: {"Content-Type": "application/json"},
                     body: text
                 });
 
                 const json = await response.json();
-                if(response.ok) {
+                if (response.ok) {
                     const key = json.key;
 
                     window.history.pushState({}, "PasteServer", "/" + key);
                     await this.load(key);
 
                     this.pasteServer.textBar.show("Secret to delete paste: " + json.deleteSecret);
-                } else if(json.message) {
+                } else if (json.message) {
                     const message = json.message;
                     this.pasteServer.textBar.show("Error while saving: " + message, 3000);
                 } else
@@ -225,14 +225,11 @@ class PasteDocument {
     }
 
     async delete(secret) {
-        if(!this.key || !this.locked)
+        if (!this.key || !this.locked)
             return;
 
         try {
-            const response = await fetch("/documents/delete/" + this.key, {
-                method: "GET",
-                headers: {"deleteSecret": secret}
-            });
+            const response = await fetch(`/documents/delete/${this.key}/${secret}`, {method: "GET"});
 
             const json = await response.json();
             if (response.ok)

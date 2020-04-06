@@ -8,7 +8,7 @@ class ArangoStorage {
         database.useBasicAuth(storageConfig.user, storageConfig.password);
 
         database.listDatabases().then(databases => {
-            if(databases.indexOf(storageConfig.database) === -1) {
+            if (databases.indexOf(storageConfig.database) === -1) {
                 database.createDatabase(storageConfig.database).then()
                     .catch(error => console.error("Failed to create database.", error));
             }
@@ -18,7 +18,7 @@ class ArangoStorage {
 
         const collection = database.collection("pasteDocuments");
         collection.exists().then(exists => {
-            if(!exists)
+            if (!exists)
                 collection.create().catch(error => console.error("Failed to create collection.", error));
         });
 
@@ -42,7 +42,7 @@ class ArangoStorage {
     }
 
     async load(key) {
-        if(!await this.collection.documentExists(key))
+        if (!await this.collection.documentExists(key))
             return null;
         try {
             const document = await this.collection.document(key);
@@ -54,11 +54,11 @@ class ArangoStorage {
     }
 
     async deleteBySecret(key, deleteSecret) {
-        if(!await this.collection.documentExists(key))
+        if (!await this.collection.documentExists(key))
             return false;
         try {
             const document = await this.collection.document(key);
-            if(document.deleteSecret === deleteSecret) {
+            if (document.deleteSecret === deleteSecret) {
                 await this.collection.remove(key);
                 return true;
             }
@@ -69,7 +69,7 @@ class ArangoStorage {
     }
 
     async delete(key) {
-        if(!await this.collection.documentExists(key))
+        if (!await this.collection.documentExists(key))
             return false;
         try {
             await this.collection.remove(key);

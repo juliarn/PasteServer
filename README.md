@@ -1,6 +1,6 @@
 # PasteServer
 PasteServer to upload text or code.
-Demo: https://paste.dsyn.ga
+Demo: https://just-paste.it
 
 # Usage
 To use the server, just download this repo and install [Node.js](http://www.nodejs.org/) and [Redis](http://www.redis.io/) or
@@ -79,7 +79,7 @@ keyChars but with all letters in uppercase.
 # API
 
 You can use the API of the PasteServer to create, read and delete documents. All API requests can be made 
-to the /documents-route (for example https://paste.dsyn.ga/documents).
+to the /documents-route (for example https://just-paste.it/documents).
 
 ## Create a document
 
@@ -109,7 +109,7 @@ The last three all contain this:
 ## Read a document
 
 Send a GET-request to the /documents-route + the key of the wanted document
-(for example https://paste.dsyn.ga/documents/key).
+(for example https://just-paste.it/documents/$key).
 
 If the document exists, you'll get the following response:
 
@@ -123,9 +123,8 @@ If not, this:
 
 ## Delete a document
 
-Send a GET-request to the /documents/delete-route + the key of the wanted document
-(for example https://paste.dsyn.ga/documents/delete/key). 
-Add a header with the name ```deleteSecret``` and add the secret of the document as value.
+Send a GET-request to the /documents/delete-route + the key of the wanted document + the deleteSecret
+(for example https://just-paste.it/documents/delete/$key/$deleteSecret). 
 
 If everything succeeded, you'll get the following response:
 
