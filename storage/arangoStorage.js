@@ -1,8 +1,8 @@
 const config = require("../config");
-const {Database} = require("arangojs");
+const { Database } = require("arangojs");
 
 class ArangoStorage {
-
+F
     constructor(storageConfig) {
         const database = new Database(`http://${storageConfig.host}:${storageConfig.port}`);
         database.useBasicAuth(storageConfig.user, storageConfig.password);
@@ -16,10 +16,25 @@ class ArangoStorage {
 
         database.useDatabase(storageConfig.database);
 
+        const expire = storageConfig.documentExpireInMs / 1000;
+
         const collection = database.collection("pasteDocuments");
         collection.exists().then(exists => {
-            if (!exists)
-                collection.create().catch(error => console.error("Failed to create collection.", error));
+            if (!exists) {
+                collection.create().then(() => {
+                    collection.ensureIndex({
+                        type: "ttl",
+                        fields: ["lastAccessedAt"],
+                        expireAfter: expire
+                    });
+                }).catch(error => console.error("Failed to create collection.", error));
+            } else {
+                collection.ensureIndex({
+                    type: "ttl",
+                    fields: ["lastAccessedAt"],
+                    expireAfter: expire
+                });
+            }
         });
 
         this.collection = collection;
@@ -32,7 +47,8 @@ class ArangoStorage {
                 _key: key,
                 deleteSecret,
                 text,
-                isStatic
+                isStatic,
+                lastAccessedAt: Date.now()
             });
         } catch (error) {
             console.error("Failed to save document.", error);
@@ -46,6 +62,10 @@ class ArangoStorage {
             return null;
         try {
             const document = await this.collection.document(key);
+
+            document.lastAccessedAt = Date.now();
+            await this.collection.save(document);
+
             return document.text;
         } catch (error) {
             console.error("Failed to load document.", error);
