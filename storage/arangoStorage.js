@@ -1,45 +1,43 @@
-const config = require("../config");
-const { Database } = require("arangojs");
+const {Database} = require("arangojs");
 
 class ArangoStorage {
-F
-    constructor(storageConfig) {
-        const database = new Database(`http://${storageConfig.host}:${storageConfig.port}`);
+
+    async prepare(storageConfig) {
+        let database = new Database(`http://${storageConfig.host}:${storageConfig.port}`);
         database.useBasicAuth(storageConfig.user, storageConfig.password);
 
-        database.listDatabases().then(databases => {
+        try {
+            const databases = await database.listDatabases();
+
             if (databases.indexOf(storageConfig.database) === -1) {
-                database.createDatabase(storageConfig.database).then()
-                    .catch(error => console.error("Failed to create database.", error));
+                await database.createDatabase(storageConfig.database);
             }
-        });
+            database = database.database(storageConfig.database);
 
-        database.useDatabase(storageConfig.database);
+            const collection = database.collection("pasteDocuments");
 
-        const expire = storageConfig.documentExpireInMs / 1000;
-
-        const collection = database.collection("pasteDocuments");
-        collection.exists().then(exists => {
-            if (!exists) {
-                collection.create().then(() => {
-                    collection.ensureIndex({
-                        type: "ttl",
-                        fields: ["lastAccessedAt"],
-                        expireAfter: expire
-                    });
-                }).catch(error => console.error("Failed to create collection.", error));
-            } else {
-                collection.ensureIndex({
-                    type: "ttl",
-                    fields: ["lastAccessedAt"],
-                    expireAfter: expire
-                });
+            if (!await collection.exists()) {
+                await collection.create();
             }
-        });
+            this.collection = collection;
 
-        this.collection = collection;
+            const indexName = "ttl";
+
+            const index = Array.from(await collection.indexes()).find(index => index.name === indexName);
+            if (index) {
+                await collection.dropIndex(index.name);
+            }
+
+            await collection.ensureIndex({
+                name: indexName,
+                type: "ttl",
+                fields: ["lastAccessedAt"],
+                expireAfter: storageConfig.documentExpireInMs / 1000,
+            });
+        } catch (error) {
+            console.error("Failed to prepare arangodb storage.", error);
+        }
     }
-
 
     async save(key, deleteSecret, text, isStatic) {
         try {
@@ -48,7 +46,7 @@ F
                 deleteSecret,
                 text,
                 isStatic,
-                lastAccessedAt: Date.now()
+                lastAccessedAt: Date.now() / 1000
             });
         } catch (error) {
             console.error("Failed to save document.", error);
@@ -63,8 +61,8 @@ F
         try {
             const document = await this.collection.document(key);
 
-            document.lastAccessedAt = Date.now();
-            await this.collection.save(document);
+            document.lastAccessedAt = Date.now() / 1000;
+            await this.collection.replace(document._key, document);
 
             return document.text;
         } catch (error) {
@@ -101,4 +99,4 @@ F
 
 }
 
-module.exports = new ArangoStorage(config.storage);
+module.exports = new ArangoStorage();

@@ -27,6 +27,7 @@
         console.log(`There is no support for '${database}'!`);
         process.exit();
     }
+    await documentStorage.prepare(config.storage);
 
     // bodyParser to handle requests in json-format
     const jsonParser = bodyParser.json({limit: config.document.dataLimit, extended: true});
