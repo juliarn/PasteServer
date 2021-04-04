@@ -3,12 +3,12 @@ const redis = require("redis");
 
 class RedisStorage {
 
-    constructor(storageConfig) {
+    prepare(storageConfig) {
         this.client = redis.createClient({
             host: storageConfig.host,
             port: storageConfig.port
         });
-        if(storageConfig.password)
+        if (storageConfig.password)
             this.client.auth(storageConfig.password);
         this.client.on("error", error => console.error("Redis error occured.", error));
         this.expire = storageConfig.documentExpireInMs / 1000;
@@ -98,4 +98,4 @@ class RedisStorage {
 
 }
 
-module.exports = new RedisStorage(config.storage);
+module.exports = new RedisStorage();

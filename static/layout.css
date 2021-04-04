@@ -44,6 +44,7 @@ textarea {
     color: #787878;
     width: 2%;
     padding-right: 30px;
+    user-select: none;
 }
 
 .side-panel {
