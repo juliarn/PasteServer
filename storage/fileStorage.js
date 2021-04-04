@@ -4,7 +4,7 @@ const crypto = require("crypto");
 
 class FileStorage {
 
-    constructor(storageConfig) {
+    async prepare(storageConfig) {
         this.path = storageConfig.path;
         if (!fs.existsSync(this.path)) {
             fs.mkdir(this.path, error => {
@@ -119,4 +119,4 @@ class FileStorage {
 
 }
 
-module.exports = new FileStorage(config.storage);
+module.exports = new FileStorage();
