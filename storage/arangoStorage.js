@@ -7,7 +7,7 @@ class ArangoStorage {
         database.useBasicAuth(storageConfig.user, storageConfig.password);
 
         try {
-            const databases = await database.listDatabases();
+            const databases = await database.userDatabases();
 
             if (databases.indexOf(storageConfig.database) === -1) {
                 await database.createDatabase(storageConfig.database);
