@@ -45,13 +45,22 @@ class ArangoStorage {
 
     async save(key, deleteSecret, text, isStatic) {
         try {
-            await this.collection.save({
-                _key: key,
-                deleteSecret,
-                text,
-                isStatic,
-                lastAccessedAt: Date.now() / 1000
-            });
+            if (isStatic) {
+                await this.collection.save({
+                    _key: key,
+                    deleteSecret,
+                    text,
+                    isStatic
+                })
+            } else {
+                await this.collection.save({
+                    _key: key,
+                    deleteSecret,
+                    text,
+                    isStatic,
+                    lastAccessedAt: Date.now() / 1000
+                });
+            }
         } catch (error) {
             console.error("Failed to save document.", error);
             return false;
@@ -65,8 +74,10 @@ class ArangoStorage {
         try {
             const document = await this.collection.document(key);
 
-            document.lastAccessedAt = Date.now() / 1000;
-            await this.collection.replace(document._key, document);
+            if (!document.isStatic) {
+                document.lastAccessedAt = Date.now() / 1000;
+                await this.collection.replace(document._key, document);
+            }
 
             return document.text;
         } catch (error) {
