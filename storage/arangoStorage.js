@@ -28,7 +28,7 @@ class ArangoStorage {
                 if (index.expireAfter !== storageConfig.documentExpireInMs / 1000) {
                     await collection.dropIndex(index.name);
                 } else {
-                    return
+                    return;
                 }
             }
 
@@ -45,22 +45,18 @@ class ArangoStorage {
 
     async save(key, deleteSecret, text, isStatic) {
         try {
-            if (isStatic) {
-                await this.collection.save({
-                    _key: key,
-                    deleteSecret,
-                    text,
-                    isStatic
-                })
-            } else {
-                await this.collection.save({
-                    _key: key,
-                    deleteSecret,
-                    text,
-                    isStatic,
-                    lastAccessedAt: Date.now() / 1000
-                });
+            const document = {
+                _key: key,
+                deleteSecret,
+                text,
+                isStatic
+            };
+
+            if (!isStatic) {
+                document.lastAccessedAt = Date.now() / 1000;
             }
+
+            await this.collection.save(document);
         } catch (error) {
             console.error("Failed to save document.", error);
             return false;
