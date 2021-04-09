@@ -25,7 +25,11 @@ class ArangoStorage {
 
             const index = Array.from(await collection.indexes()).find(index => index.name === indexName);
             if (index) {
-                await collection.dropIndex(index.name);
+                if (index.expireAfter !== storageConfig.documentExpireInMs / 1000) {
+                    await collection.dropIndex(index.name);
+                } else {
+                    return
+                }
             }
 
             await collection.ensureIndex({
