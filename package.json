@@ -1,6 +1,6 @@
 {
   "name": "pasteserver",
-  "version": "1.16.1",
+  "version": "1.16.2",
   "description": "PasteServer to upload text or code",
   "repository": "https://github.com/juliarn/PasteServer",
   "readme": "README.md",
@@ -11,7 +11,7 @@
   "author": "juliarn",
   "license": "MIT",
   "dependencies": {
-    "arangojs": "^7.0.1",
+    "arangojs": "^7.3.0",
     "body-parser": "latest",
     "express": "^4.16.4",
     "express-rate-limit": "^3.3.2",

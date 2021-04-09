@@ -18,7 +18,7 @@ module.exports = {
         // only arangodb
         user: "root",
         database: "pasteServer",
-        // only redis
+        // only redis and arangodb
         documentExpireInMs: 3 * 24 * 60 * 60 * 1000,
         // only file
         path: "data"

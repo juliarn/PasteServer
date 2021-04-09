@@ -3,16 +3,16 @@ const {Database} = require("arangojs");
 class ArangoStorage {
 
     async prepare(storageConfig) {
-        let database = new Database(`http://${storageConfig.host}:${storageConfig.port}`);
-        database.useBasicAuth(storageConfig.user, storageConfig.password);
+        let database = new Database({
+            url: `http://${storageConfig.host}:${storageConfig.port}`,
+            databaseName: storageConfig.database,
+            auth: {username: storageConfig.user, password: storageConfig.password}
+        });
 
         try {
-            const databases = await database.userDatabases();
-
-            if (databases.indexOf(storageConfig.database) === -1) {
-                await database.createDatabase(storageConfig.database);
+            if (!await database.exists()) {
+                database = await database.createDatabase(storageConfig.database);
             }
-            database = database.database(storageConfig.database);
 
             const collection = database.collection("pasteDocuments");
 
