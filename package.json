@@ -1,6 +1,6 @@
 {
   "name": "pasteserver",
-  "version": "1.16.2",
+  "version": "1.16.3",
   "description": "PasteServer to upload text or code",
   "repository": "https://github.com/juliarn/PasteServer",
   "readme": "README.md",
