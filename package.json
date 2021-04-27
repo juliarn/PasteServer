@@ -16,7 +16,7 @@
     "express": "^4.16.4",
     "express-rate-limit": "^3.3.2",
     "fs-extra": "latest",
-    "redis": "^3.0.2",
+    "redis": "^3.1.1",
     "request": "latest",
     "serve-static": "^1.13.2",
     "unzipper": "^0.10.10"
