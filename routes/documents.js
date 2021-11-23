@@ -70,7 +70,7 @@ router.get("/:key", async (request, response) => {
     }
 });
 
-router.get("/delete/:key/:deleteSecret", rateLimitHandler, async (request, response) => {
+router.delete("/delete/:key/:deleteSecret", rateLimitHandler, async (request, response) => {
     const key = request.params.key;
     const deleteSecret = request.params.deleteSecret;
 
