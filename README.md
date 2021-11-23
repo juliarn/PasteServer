@@ -123,7 +123,7 @@ If not, this:
 
 ## Delete a document
 
-Send a GET-request to the /documents/delete-route + the key of the wanted document + the deleteSecret
+Send a DELETE-request to the /documents/delete-route + the key of the wanted document + the deleteSecret
 (for example https://just-paste.it/documents/delete/$key/$deleteSecret). 
 
 If everything succeeded, you'll get the following response:
