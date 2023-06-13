@@ -36,4 +36,9 @@ module.exports = {
         keyChars: "abcdefghijklmnopqrstivwxyz0123456789",
         withToUpperCase: true
     },
+    ssl: {
+        enabled: false,
+        privkey: "/link/to/privkey.pem",
+        fullchain: "/link/to/fullchain.pem"
+    },
 };

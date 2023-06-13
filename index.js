@@ -42,8 +42,23 @@
     // else, redirecting to the root
     app.use((request, response) => response.redirect("/"));
 
+
     console.log(`Trying to bind on port ${config.server.port}...`);
-    app.listen(config.server.port, console.log(`Now listening on port ${config.server.port}.`));
+    if (config.ssl.enabled) {
+        const https = require('https');
+        const fs = require('fs');
+    
+        const httpsServer = https.createServer({
+            key: fs.readFileSync(config.ssl.privkey),
+            cert: fs.readFileSync(config.ssl.fullchain),
+          }, app);
+    
+        httpsServer.listen(config.server.port, () => {
+            console.log(`Now listening on port ${config.server.port}.`);
+        });
+    } else {
+        app.listen(config.server.port, console.log(`Now listening on port ${config.server.port}.`));
+    }
 
     // commands
     const {CommandProvider, defaultCommand} = require("./commands/commands");
