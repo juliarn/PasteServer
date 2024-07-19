@@ -1,0 +1,10 @@
+# IntelliJ
+.idea
+*.iml
+
+# files
+documents
+data
+
+# Node
+node_modules
